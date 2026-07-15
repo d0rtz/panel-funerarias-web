@@ -1,0 +1,1360 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel · Funerarias IA</title>
+<style>
+:root{
+  --bg:#eef2f6; --panel:#ffffff; --side:#12202e; --side2:#1b3145; --sidetxt:#aebfce;
+  --ink:#1f2c39; --muted:#66788a; --line:#e3e9ef; --brand:#1f6feb; --brand2:#3ea6ff;
+  --good:#12a66b; --goodbg:#e5f6ee; --warn:#c98a00; --warnbg:#fdf3dd; --bad:#d64545; --badbg:#fbe6e6;
+  --alta:#e5f6ee; --altatx:#12a66b; --baja:#fbe6e6; --bajatx:#d64545;
+  --radius:12px; --sh:0 1px 3px rgba(20,40,60,.08),0 1px 2px rgba(20,40,60,.04);
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background:var(--bg);color:var(--ink);font-size:14px;line-height:1.55}
+a{color:var(--brand)}
+.layout{display:flex;min-height:100vh}
+/* SIDEBAR */
+.side{width:236px;background:var(--side);color:var(--sidetxt);flex-shrink:0;position:sticky;top:0;height:100vh;
+  overflow-y:auto;padding:18px 0}
+.brand{padding:0 20px 16px;border-bottom:1px solid var(--side2);margin-bottom:10px}
+.brand h1{color:#fff;font-size:1.05rem;margin:0}
+.brand p{margin:2px 0 0;font-size:.72rem;color:#7f95a8;letter-spacing:.04em;text-transform:uppercase}
+.nav{list-style:none;padding:0;margin:0}
+.nav li{margin:1px 10px}
+.nav button{width:100%;text-align:left;background:none;border:none;color:var(--sidetxt);
+  padding:9px 12px;border-radius:8px;cursor:pointer;font-size:.88rem;display:flex;align-items:center;gap:10px;transition:.12s}
+.nav button:hover{background:var(--side2);color:#fff}
+.nav button.active{background:var(--brand);color:#fff;font-weight:600}
+.nav .ico{width:18px;text-align:center;font-size:1rem}
+.nav .grouplbl{font-size:.66rem;text-transform:uppercase;letter-spacing:.08em;color:#5f7488;padding:14px 22px 5px}
+/* MAIN */
+.main{flex:1;min-width:0}
+.topbar{background:var(--panel);border-bottom:1px solid var(--line);padding:14px 26px;display:flex;
+  align-items:center;justify-content:space-between;position:sticky;top:0;z-index:20}
+.topbar h2{margin:0;font-size:1.15rem}
+.topbar .sub{font-size:.78rem;color:var(--muted)}
+.btn{background:var(--brand);color:#fff;border:none;padding:8px 14px;border-radius:8px;cursor:pointer;font-size:.82rem;font-weight:600}
+.btn.ghost{background:#fff;color:var(--muted);border:1px solid var(--line)}
+.btn.ghost:hover{color:var(--ink)}
+.content{padding:24px 26px 60px;max-width:1180px}
+section.view{display:none;animation:fade .2s}
+section.view.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1}}
+/* CARDS */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-bottom:22px}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--sh)}
+.kpi .lbl{font-size:.74rem;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.kpi .num{font-size:1.9rem;font-weight:700;margin-top:4px;line-height:1}
+.kpi .num.good{color:var(--good)} .kpi .num.brand{color:var(--brand)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--sh);margin-bottom:20px}
+.card h3{margin:0 0 14px;font-size:1rem}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:900px){.grid2{grid-template-columns:1fr}.side{width:64px}.brand h1,.brand p,.nav button span.txt,.nav .grouplbl{display:none}.nav button{justify-content:center}}
+/* FUNNEL */
+.funnel-row{display:flex;align-items:center;gap:12px;margin:9px 0}
+.funnel-row .fl{width:130px;font-size:.82rem;color:var(--muted)}
+.funnel-bar{flex:1;background:#f0f4f8;border-radius:6px;height:26px;overflow:hidden}
+.funnel-bar span{display:block;height:100%;background:linear-gradient(90deg,var(--brand),var(--brand2));border-radius:6px;transition:width .4s}
+.funnel-row .fn{width:34px;text-align:right;font-weight:700}
+/* TABLE */
+.toolbar{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px;align-items:center}
+.toolbar input,.toolbar select{padding:8px 10px;border:1px solid var(--line);border-radius:8px;font-size:.82rem;background:#fff}
+.toolbar input[type=search]{min-width:210px}
+table{width:100%;border-collapse:collapse;font-size:.82rem}
+th,td{padding:8px 9px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}
+th{background:#f6f9fc;font-size:.72rem;text-transform:uppercase;letter-spacing:.03em;color:var(--muted);position:sticky;top:57px;z-index:5}
+tbody tr:hover{background:#f8fbfe}
+.tag{display:inline-block;padding:2px 8px;border-radius:999px;font-size:.7rem;font-weight:600}
+.tag.alta{background:var(--alta);color:var(--altatx)} .tag.baja{background:var(--baja);color:var(--bajatx)}
+.tag.web{background:var(--warnbg);color:var(--warn)} .tag.cad{background:#eef;color:#4a4ad0}
+td select,td input{font-size:.8rem;padding:5px 6px;border:1px solid var(--line);border-radius:6px;width:100%;background:#fff;font-family:inherit}
+td.est select{font-weight:600}
+.st-sincontactar{color:var(--muted)} .st-cliente{color:var(--good);font-weight:700}
+.tblwrap{overflow-x:auto;max-height:70vh;overflow-y:auto}
+.small{font-size:.78rem;color:var(--muted)}
+/* DOC content */
+.doc{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:28px 32px;box-shadow:var(--sh);max-width:860px}
+.doc h1{font-size:1.5rem;margin-top:0} .doc h2{font-size:1.15rem;margin-top:26px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+.doc h3{font-size:1rem;margin-top:20px} .doc table{margin:12px 0} .doc th{position:static}
+.doc pre{background:#0f1e2b;color:#e6eef5;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:.82rem;position:relative}
+.doc code{font-family:ui-monospace,Menlo,Consolas,monospace}
+.doc blockquote{border-left:3px solid var(--brand);margin:14px 0;padding:6px 16px;background:#f2f7fd;color:#39516b;border-radius:0 8px 8px 0}
+.copybtn{position:absolute;top:8px;right:8px;background:rgba(255,255,255,.14);color:#fff;border:none;
+  padding:3px 9px;border-radius:6px;font-size:.7rem;cursor:pointer}
+.copybtn:hover{background:rgba(255,255,255,.28)}
+/* ROI + FIN */
+.roiwrap{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:820px){.roiwrap{grid-template-columns:1fr}}
+label.fld{display:block;font-size:.82rem;margin:12px 0 5px;color:#42566a}
+.rowr{display:flex;align-items:center;gap:10px}
+input[type=range]{flex:1;accent-color:var(--brand)}
+.rv{min-width:76px;text-align:right;font-weight:700;font-variant-numeric:tabular-nums;background:#f4f8fc;border:1px solid var(--line);border-radius:6px;padding:4px 8px}
+.big{font-size:2rem;font-weight:800;line-height:1.1}
+.big.bad{color:var(--bad)} .big.good{color:var(--good)}
+.mrow{padding:11px 0;border-bottom:1px solid var(--line)} .mrow:last-child{border:none}
+.mrow .k{font-size:.8rem;color:var(--muted)}
+.pill{display:inline-block;background:var(--goodbg);color:var(--good);border:1px solid #b8e6ce;border-radius:999px;padding:5px 12px;font-weight:700;font-size:.85rem}
+.headline{background:#f2f7fd;border:1px solid #d6e6f8;border-radius:10px;padding:14px 16px;margin-top:16px}
+.headline b{color:var(--good)}
+.fin-inputs{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+.fin-inputs .fi label{font-size:.72rem;color:var(--muted);display:block;margin-bottom:3px}
+.fin-inputs .fi input{width:100%;padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:#fffdf0}
+.chartbars{display:flex;align-items:flex-end;gap:10px;height:150px;margin:16px 0 4px;padding-top:10px}
+.chartbars .cb{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:5px}
+.chartbars .cb .bar{width:70%;background:linear-gradient(180deg,var(--brand2),var(--brand));border-radius:5px 5px 0 0;min-height:2px}
+.chartbars .cb .cbl{font-size:.68rem;color:var(--muted)} .chartbars .cb .cvl{font-size:.68rem;font-weight:700}
+ul.check{list-style:none;padding:0;margin:0}
+ul.check li{display:flex;gap:11px;align-items:flex-start;padding:11px 0;border-bottom:1px solid var(--line)}
+ul.check li:last-child{border:none}
+ul.check input{margin-top:3px;width:17px;height:17px;accent-color:var(--good);flex-shrink:0;cursor:pointer}
+ul.check li.done label{text-decoration:line-through;color:var(--muted)}
+ul.check label{cursor:pointer}
+.badge{display:inline-block;background:var(--brand);color:#fff;border-radius:999px;padding:1px 8px;font-size:.72rem;font-weight:700;margin-left:6px}
+.hint{font-size:.78rem;color:var(--muted);margin:4px 0 16px}
+.provtbl td,.provtbl th{padding:5px 8px}
+.syncbadge{display:inline-block;font-size:.74rem;font-weight:600;padding:5px 11px;border-radius:999px;margin-right:8px;border:1px solid var(--line);background:#fff;color:var(--muted)}.syncbadge.ok{background:var(--goodbg);color:var(--good);border-color:#b8e6ce}.syncbadge.saving{background:var(--warnbg);color:var(--warn);border-color:#f0dca6}.syncbadge.err{background:var(--badbg);color:var(--bad);border-color:#f0c2c2}.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:8px;font-size:.82rem;opacity:0;transition:.25s;pointer-events:none;z-index:99}
+.toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div class="layout">
+  <aside class="side">
+    <div class="brand"><h1>Funerarias IA</h1><p>Panel de control</p></div>
+    <div class="nav grouplbl">Gestión</div>
+    <ul class="nav" id="nav">
+      <li><button data-v="dashboard" class="active"><span class="ico">📊</span><span class="txt">Dashboard</span></button></li>
+      <li><button data-v="crm"><span class="ico">👥</span><span class="txt">CRM · Leads</span></button></li>
+      <li><button data-v="financiero"><span class="ico">💰</span><span class="txt">Plan financiero</span></button></li>
+      <li><button data-v="arranque"><span class="ico">✅</span><span class="txt">Arranque</span></button></li>
+    </ul>
+    <div class="nav grouplbl">Ventas</div>
+    <ul class="nav">
+      <li><button data-v="roi"><span class="ico">🧮</span><span class="txt">Calculadora ROI</span></button></li>
+      <li><button data-v="ventas"><span class="ico">📞</span><span class="txt">Guion de venta</span></button></li>
+      <li><button data-v="plantillas"><span class="ico">💬</span><span class="txt">Plantillas mensajes</span></button></li>
+      <li><button data-v="dossier"><span class="ico">📰</span><span class="txt">Dossier comercial</span></button></li>
+    </ul>
+    <div class="nav grouplbl">Producto y legal</div>
+    <ul class="nav">
+      <li><button data-v="guion"><span class="ico">🤖</span><span class="txt">Guion asistente IA</span></button></li>
+      <li><button data-v="montaje"><span class="ico">🛠️</span><span class="txt">Montaje técnico</span></button></li>
+      <li><button data-v="plan"><span class="ico">📋</span><span class="txt">Plan de negocio</span></button></li>
+      <li><button data-v="contrato"><span class="ico">📄</span><span class="txt">Contrato</span></button></li>
+    </ul>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <div><h2 id="vtitle">Dashboard</h2><div class="sub" id="vsub">Resumen de tu operación comercial</div></div>
+      <div>
+        <span id="syncbadge" class="syncbadge">● Local</span>
+        <button class="btn ghost" onclick="exportCRM()">⬇ Exportar CRM</button>
+        <button class="btn ghost" onclick="resetAll()">↺ Reiniciar datos</button>
+      </div>
+    </div>
+    <div class="content">
+
+    <!-- DASHBOARD -->
+    <section class="view active" id="v-dashboard">
+      <div class="kpis" id="kpis"></div>
+      <div class="grid2">
+        <div class="card"><h3>Embudo de ventas</h3><div id="funnel"></div></div>
+        <div class="card">
+          <h3>Ingresos (estimación)</h3>
+          <div class="mrow"><div class="k">Ingreso recurrente mensual actual (clientes cerrados)</div><div class="big good" id="mrr">—</div></div>
+          <div class="mrow"><div class="k">Potencial en el embudo (interesados + demos + propuestas)</div><div class="big brand" id="pot">—</div><div class="small">si cierras a cuota Estándar (280€/mes)</div></div>
+        </div>
+      </div>
+      <div class="grid2">
+        <div class="card"><h3>Próximas acciones <span class="badge" id="pendcount">0</span></h3>
+          <div class="hint">Leads activos ordenados por prioridad. Actualízalos en el CRM tras cada llamada.</div>
+          <div id="nextactions"></div></div>
+        <div class="card"><h3>Reparto por provincia</h3><div id="byprov"></div></div>
+      </div>
+    </section>
+
+    <!-- CRM -->
+    <section class="view" id="v-crm">
+      <div class="card">
+        <div class="toolbar">
+          <input type="search" id="q" placeholder="Buscar empresa, ciudad, teléfono…" oninput="renderCRM()">
+          <select id="fEstado" onchange="renderCRM()"><option value="">Todos los estados</option></select>
+          <select id="fProv" onchange="renderCRM()"><option value="">Todas las provincias</option></select>
+          <select id="fTipo" onchange="renderCRM()"><option value="">Indep. + Cadenas</option><option>Independiente</option><option>Cadena</option></select>
+          <select id="fPrio" onchange="renderCRM()"><option value="">Toda prioridad</option><option>Alta</option><option>Media</option><option>Baja</option></select>
+          <span class="small" id="crmcount"></span>
+        </div>
+        <div class="tblwrap">
+          <table id="crmtable">
+            <thead><tr>
+              <th>Prio.</th><th>Empresa</th><th>Teléfono</th><th>Ciudad</th><th>Prov.</th>
+              <th>Tipo</th><th>Rating</th><th>Estado</th><th>Próxima acción</th><th>Notas</th>
+            </tr></thead>
+            <tbody id="crmbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- FINANCIERO -->
+    <section class="view" id="v-financiero">
+      <div class="card">
+        <h3>Supuestos (edítalos y todo se recalcula)</h3>
+        <div class="fin-inputs" id="finInputs"></div>
+      </div>
+      <div class="card"><h3>Ingresos totales por mes</h3><div class="chartbars" id="finChart"></div></div>
+      <div class="card"><h3>Proyección a 6 meses</h3><div class="tblwrap"><table id="finTable"></table></div>
+        <p class="small">Con ~58 funerarias en el CRM hay embudo para arrancar. Para el objetivo del mes 6 conviene ampliar a más provincias (servicio 100% remoto).</p>
+      </div>
+    </section>
+
+    <!-- ROI -->
+    <section class="view" id="v-roi">
+      <div class="card">
+        <p class="small">Ábrelo con el cliente delante y mueve los valores. Sé conservador: es más creíble y aun así los números salen solos.</p>
+        <div class="roiwrap">
+          <div>
+            <label class="fld">Llamadas fuera de horario a la semana</label>
+            <div class="rowr"><input type="range" id="r_calls" min="1" max="40" value="6"><span class="rv" id="rv_calls">6</span></div>
+            <label class="fld">De esas, ¿qué % NO se cogen?</label>
+            <div class="rowr"><input type="range" id="r_lost" min="0" max="100" value="20"><span class="rv" id="rv_lost">20 %</span></div>
+            <label class="fld">De las no cogidas, ¿qué % era un servicio real?</label>
+            <div class="rowr"><input type="range" id="r_conv" min="0" max="100" value="12"><span class="rv" id="rv_conv">12 %</span></div>
+            <label class="fld">Valor medio de un servicio (€)</label>
+            <div class="rowr"><input type="range" id="r_ticket" min="1500" max="7000" step="100" value="3500"><span class="rv" id="rv_ticket">3.500 €</span></div>
+            <label class="fld">Plan del asistente</label>
+            <select id="r_plan" style="width:100%;padding:8px;border:1px solid var(--line);border-radius:8px" onchange="calcROI()">
+              <option value="300,150">Básico — 300€ + 150€/mes</option>
+              <option value="550,280" selected>Estándar — 550€ + 280€/mes</option>
+              <option value="800,400">Premium — 800€ + 400€/mes</option>
+            </select>
+          </div>
+          <div>
+            <div class="mrow"><div class="k">Servicios que se pierden al año</div><div class="big bad" id="o_lostYear">—</div></div>
+            <div class="mrow"><div class="k">Dinero perdido al año</div><div class="big bad" id="o_money">—</div></div>
+            <div class="mrow"><div class="k">Coste del asistente el primer año</div><div class="big" id="o_cost">—</div></div>
+            <div class="mrow"><div class="k">Beneficio neto recuperado</div><div class="big good" id="o_net">—</div></div>
+            <div class="mrow"><div class="k">Se paga solo con recuperar…</div><div><span class="pill" id="o_be">—</span></div></div>
+          </div>
+        </div>
+        <div class="headline" id="o_head"></div>
+      </div>
+    </section>
+
+    <!-- DOC SECTIONS -->
+    <section class="view" id="v-arranque"><div id="arranqueBox"></div></section>
+    <section class="view" id="v-ventas"><div class="doc"><p><strong>GUION DE LLAMADA EN FRÍO Y MANEJO DE OBJECIONES
+Sector funerarias y tanatorios</strong></p>
+<h1>Antes de llamar</h1>
+<p>Objetivo de la llamada: NO es cerrar la venta. Es conseguir 15 minutos de demo o una segunda llamada. No sobrevendas por teléfono, genera curiosidad y agenda.</p>
+<p>Tono: cercano, respetuoso, sin prisa, sin sonar a comercial de telemarketing. Habla más despacio de lo normal. Este es un sector emocionalmente sensible incluso en la parte comercial — el interlocutor lidia con la muerte a diario, trátalo con respeto profesional, nunca con entusiasmo excesivo.</p>
+<p>Antes de llamar, mira el nombre de la empresa y, si puedes, el nombre del gerente (muchas fichas de Google lo mencionan en las reseñas). Usar el nombre de la persona multiplica la atención que te prestan.</p>
+<h1>Guion de apertura (primeros 20 segundos)</h1>
+<p><em>"</em><em>Buenos días/tardes, ¿hablo con [Nombre / responsable de la funeraria]? Soy [Tu nombre]. Le llamo porque trabajo con funerarias de la zona en un tema muy concreto: las llamadas que entran fuera de horario o cuando el equipo está ocupado con otro servicio. ¿Tiene un minuto?</em><em>"</em></p>
+<p>Si dice que sí → pasa a la pregunta de calificación. Si dice que está ocupado → "Sin problema, ¿le viene mejor que le llame en otro momento, esta tarde o mañana?" y cierra la llamada de forma amable, sin insistir.</p>
+<h1>Pregunta de calificación (para enganchar el dolor real)</h1>
+<p><em>"</em><em>Una pregunta rápida: cuando llaman de madrugada, o mientras están atendiendo otro servicio, ¿quién coge esa llamada?</em><em>"</em></p>
+<p>Deja que conteste. Casi siempre la respuesta revela el problema (turno de guardia caro, nadie, el propio dueño desde casa, etc.). Escucha antes de presentar nada.</p>
+<h1>Presentación breve (máximo 30 segundos)</h1>
+<p><em>"</em><em>Lo que hacemos es sencillo: un asistente con inteligencia artificial que contesta siempre, con un trato cercano y respetuoso, recoge los datos esenciales de la familia y avisa de inmediato a la persona de guardia. No sustituye a su equipo, es un apoyo para que no se quede ni una llamada sin responder cuando nadie puede cogerla en ese momento.</em><em>"</em></p>
+<p><em>"</em><em>Me gustaría enseñárselo funcionando, en una llamada de 15 minutos, sin ningún compromiso. ¿Le viene bien esta semana?</em><em>"</em></p>
+<h1>MANEJO DE OBJECIONES</h1>
+<p>Estructura para cualquier objeción: (1) validar el sentimiento, nunca contradecir de golpe. (2) reencuadrar con una pregunta o un dato. (3) volver a proponer el siguiente paso pequeño (nunca la venta completa).</p>
+<p><strong>❝ No tengo tiempo ahora</strong></p>
+<p><em>"</em><em>Lo entiendo perfectamente, seguro que está liado. Por eso mismo le llamo, esto está pensado para ahorrarle tiempo, no quitárselo. Solo necesito un minuto más o, si lo prefiere, le llamo esta tarde/mañana, ¿qué le viene mejor?</em><em>"</em></p>
+<p><strong>❝ No estamos interesados / no necesitamos nada</strong></p>
+<p><em>"</em><em>Lo entiendo, es lo primero que me dice casi todo el mundo la primera vez que llamo. Solo por curiosidad: cuando entra una llamada fuera de horario y no la cogen, ¿qué pasa con esa familia? (Deja que responda — normalmente ahí se abre la conversación de verdad.)</em><em>"</em></p>
+<p><strong>❝ Ya tenemos quien nos coge el teléfono / turno de guardia</strong></p>
+<p><em>"</em><em>Perfecto, entonces usted mejor que nadie sabe lo que cuesta mantener guardias 24 horas todo el año. Esto no sustituye a su equipo, es un apoyo extra para los momentos en los que, aun con guardia, no se puede coger — festivos señalados, dos avisos a la vez, etc.</em><em>"</em></p>
+<p><strong>❝ Es muy caro / no tenemos presupuesto</strong></p>
+<p><em>"</em><em>Entiendo la preocupación por el coste. Piense que un solo servicio que no se pierda ya cubre varios meses de cuota. ¿Le parece si le enseño números concretos aplicados a su volumen de llamadas antes de decidir si compensa o no?</em><em>"</em></p>
+<p><strong>❝ No me fío de dejar algo tan delicado en manos de una máquina</strong></p>
+<p><em>"</em><em>Le entiendo perfectamente, es la primera reacción de todo el sector y tiene toda la lógica. No sustituye el trato humano de su equipo: en cuanto la conversación toca algo delicado o que no sabe resolver, deriva automáticamente a una persona real, nunca improvisa con una familia. Y el tono está pensado para ser cercano y respetuoso — se lo puedo poner ahora mismo para que lo escuche usted mismo.</em><em>"</em></p>
+<p><strong>❝ Envíeme información por email</strong></p>
+<p><em>"</em><em>Por supuesto, se lo mando ahora mismo. Y para no hacerle perder tiempo leyendo algo que igual no aplica a su caso, ¿le parece si quedamos 10 minutos la semana que viene y se lo enseño ya funcionando? Así con el email de apoyo y la demo, tiene toda la info de un vistazo.</em><em>"</em></p>
+<p><strong>❝ Tengo que hablarlo con mi socio / con mi familia</strong></p>
+<p><em>"</em><em>Totalmente lógico, es una decisión de negocio y tiene que tomarla con quien corresponda. ¿Le parece si buscamos un hueco los tres para que lo vean juntos en la misma llamada? Así resuelvo dudas de los dos a la vez.</em><em>"</em></p>
+<p><strong>❝ ¿Y si falla o comete un error delante de una familia?</strong></p>
+<p><em>"</em><em>Es la pregunta correcta. El sistema está configurado para derivar siempre a una persona real ante cualquier situación delicada, ambigua o que no sabe resolver — usted decide exactamente qué situaciones se derivan siempre a un humano, sin excepción.</em><em>"</em></p>
+<p><strong>❝ No recibimos tantas llamadas fuera de horario</strong></p>
+<p><em>"</em><em>Me alegra oírlo, es buena señal. Aun así, en mi experiencia basta con perder dos o tres al año en el peor momento posible para que compense de sobra. ¿Le importa si le pregunto cuántas llamadas reciben de media a la semana? Así veo si de verdad tiene sentido para su caso o no.</em><em>"</em></p>
+<p><strong>❝ ¿Cómo sé que esto funciona de verdad?</strong></p>
+<p><em>"</em><em>Se lo enseño ahora mismo: hago una llamada de prueba a su propio móvil delante de usted, para que lo escuche en tiempo real antes de decidir nada.</em><em>"</em></p>
+<p><strong>❝ No quiero atarme a un contrato largo</strong></p>
+<p><em>"</em><em>No hace falta, trabajamos sin permanencia obligatoria — puede darse de baja cuando quiera. Preferimos que se quede porque le funciona, no porque esté atado a un papel.</em><em>"</em></p>
+<h1>Cierre de la llamada</h1>
+<p><em>"</em><em>Perfecto, [Nombre]. Le mando ahora mismo por WhatsApp/email la confirmación con el enlace o el hueco que hemos quedado, para que lo tenga a mano. Muchas gracias por su tiempo, un saludo.</em><em>"</em></p>
+<p>Regla de oro: cada llamada termina SIEMPRE con un siguiente paso concreto y una fecha/hora — nunca con un "ya le llamaremos" en el aire. Si no hay interés, pregunta si puedes volver a llamar en unos meses y anótalo en el Excel.</p>
+<h1>Después de colgar</h1>
+<p>Actualiza inmediatamente el Excel de leads: estado (sin contactar / contactado / interesado / demo agendada / cliente / no interesado), fecha y una nota corta de lo hablado. Esto evita llamar dos veces al mismo sitio y perder credibilidad.</p></div></section>
+    <section class="view" id="v-plantillas"><div class="doc" id="plantillasDoc"><h1>PLANTILLAS DE MENSAJES — WhatsApp y Email</h1>
+<h3>Sector funerarias · Todo el embudo, listo para copiar y pegar</h3>
+<p><strong>Cómo usar esto:</strong> sustituye lo que va entre <code>[corchetes]</code>. Manda siempre desde WhatsApp Business con foto y nombre profesional. Escribe corto. En este sector, un mensaje largo no se lee. El objetivo de cada mensaje es SIEMPRE el siguiente paso pequeño (una demo de 15 min), nunca vender por escrito.</p>
+<blockquote>
+<p>Regla de tono: sobrio, de tú a tú entre profesionales, sin emojis en exceso, sin lenguaje de "oferta". Estás hablando con alguien que trata con la muerte a diario.</p>
+</blockquote>
+<hr />
+<h2>1. PRIMER CONTACTO</h2>
+<h3>1.1 WhatsApp de primer contacto (si no coge el teléfono)</h3>
+<pre><code>Buenos días, [nombre]. Soy [tu nombre].
+Trabajo con funerarias de la zona en un tema muy concreto: las llamadas que
+entran de madrugada o cuando el equipo ya está en otro servicio, y que a veces
+no se pueden coger.
+
+¿Le vendría bien que le enseñe en 15 minutos cómo lo resolvemos, sin ningún
+compromiso? Puedo esta semana cuando mejor le venga.
+</code></pre>
+<h3>1.2 WhatsApp más directo (cerrajeros/negocios pequeños, tono más ágil)</h3>
+<pre><code>Hola [nombre], soy [tu nombre]. Ayudo a funerarias a no perder ninguna llamada
+fuera de horario con un asistente que contesta siempre y avisa al de guardia.
+¿Le enseño cómo funciona en una llamada corta esta semana?
+</code></pre>
+<h3>1.3 Email de primer contacto (asunto incluido)</h3>
+<pre><code>Asunto: Las llamadas que entran cuando no hay nadie para cogerlas
+
+Buenos días, [nombre]:
+
+Me pongo en contacto con [NOMBRE FUNERARIA] por un tema concreto del día a día
+del sector: las llamadas que entran de madrugada, en fin de semana o mientras el
+equipo está atendiendo otro servicio. Cuando nadie las coge, esa familia llama a
+la siguiente funeraria — y esa oportunidad no vuelve.
+
+Lo que hago es sencillo: un asistente con inteligencia artificial que contesta
+siempre, con un trato cercano y respetuoso, recoge los datos de la familia y
+avisa de inmediato a la persona de guardia. No sustituye a su equipo; es un apoyo
+para que no se quede ninguna llamada sin responder.
+
+Me gustaría enseñárselo funcionando en 15 minutos, sin compromiso. Le puedo
+llamar en tiempo real a su propio móvil para que lo escuche usted mismo.
+
+¿Le viene bien esta semana? Puedo adaptarme a su horario.
+
+Un saludo,
+[Tu nombre]
+[Teléfono] · [Email]
+</code></pre>
+<hr />
+<h2>2. SEGUIMIENTO (no contestó al primer intento)</h2>
+<h3>2.1 WhatsApp de recordatorio suave (a las 48-72h)</h3>
+<pre><code>Buenos días, [nombre]. Le escribí hace un par de días sobre las llamadas fuera
+de horario en [NOMBRE FUNERARIA]. Sé que tendrá lío, así que sin prisa.
+
+Si le encaja, con 15 minutos le enseño cómo funciona y usted decide. ¿Le busco
+un hueco esta semana o prefiere que le escriba más adelante?
+</code></pre>
+<h3>2.2 Segundo seguimiento (última vez, deja la puerta abierta)</h3>
+<pre><code>[nombre], no quiero ser pesado. Le dejo el tema por aquí para cuando lo vea
+oportuno. Si en algún momento le interesa que no se le escape ninguna llamada de
+madrugada, me dice y lo vemos en 15 minutos. Un saludo.
+</code></pre>
+<hr />
+<h2>3. CONFIRMACIÓN DE DEMO (cuando aceptan)</h2>
+<pre><code>Perfecto, [nombre]. Le confirmo:
+
+📅 [día] a las [hora]
+📞 Le llamaré al [teléfono]
+⏱️ 15 minutos, y le hago una llamada de prueba en directo a su móvil para que
+   escuche el asistente funcionando.
+
+Cualquier cambio, me dice. ¡Hasta entonces!
+</code></pre>
+<hr />
+<h2>4. POST-DEMO</h2>
+<h3>4.1 WhatsApp/Email tras una demo que fue bien</h3>
+<pre><code>Gracias por el rato de hoy, [nombre]. Como le comenté, le paso un resumen:
+
+- El asistente contesta siempre y avisa al de guardia al instante.
+- Ante cualquier situación delicada, deriva a una persona real. Usted decide qué
+  casos se derivan siempre.
+- Sin permanencia: puede darse de baja cuando quiera.
+
+Le adjunto la propuesta con los planes. Mi recomendación para su caso es el plan
+[Básico/Estándar/Premium] por [motivo concreto]. Si le parece, lo dejamos en
+marcha en 1-2 semanas. ¿Le llamo el [día] para resolver las últimas dudas?
+</code></pre>
+<h3>4.2 WhatsApp tras una demo tibia (mantener vivo)</h3>
+<pre><code>Gracias por el tiempo de hoy, [nombre]. Entiendo que quiera pensarlo, es una
+decisión de negocio. Le dejo la propuesta por escrito para que la vea con calma
+y, si quiere, la comente con [socio/familia]. Sin prisa. ¿Le escribo la semana
+que viene para ver cómo lo ve?
+</code></pre>
+<hr />
+<h2>5. ENVÍO DE PROPUESTA ECONÓMICA (email)</h2>
+<pre><code>Asunto: Propuesta para [NOMBRE FUNERARIA] — asistente de atención 24/7
+
+Buenos días, [nombre]:
+
+Tal y como hablamos, le detallo la propuesta.
+
+QUÉ INCLUYE (plan [Estándar]):
+- Asistente de IA que contesta 24/7 con tono cercano y respetuoso.
+- Recogida de datos de la familia y aviso inmediato al móvil de guardia
+  (WhatsApp + llamada en urgencias).
+- Derivación automática a persona real en cualquier situación delicada.
+- Resumen diario de las llamadas atendidas.
+
+INVERSIÓN:
+- Puesta en marcha (pago único): [550] € + IVA
+- Cuota mensual: [280] €/mes + IVA
+- Sin permanencia. Baja cuando quiera con 30 días de aviso.
+
+PUESTA EN MARCHA: 1-2 semanas desde la firma.
+
+Piense que un solo servicio que hoy se pierde ya cubre varios meses de cuota.
+Le adjunto también el contrato para que lo revise con calma.
+
+¿Lo dejamos en marcha? Quedo a su disposición para cualquier duda.
+
+Un saludo,
+[Tu nombre]
+[Teléfono] · [Email]
+</code></pre>
+<hr />
+<h2>6. TRAS LA FIRMA (arranque)</h2>
+<pre><code>¡Bienvenido, [nombre]! Encantado de empezar con [NOMBRE FUNERARIA].
+
+Próximos pasos (yo me encargo de casi todo):
+1. Esta semana recojo los datos de configuración (número de guardia, horarios,
+   casos a derivar).
+2. Monto y pruebo el asistente con usted antes de activarlo.
+3. Lo dejamos funcionando y le enseño el resumen diario.
+
+Le llamo [día] para el punto 1. Cualquier cosa, aquí me tiene.
+</code></pre>
+<hr />
+<h2>7. REACTIVACIÓN (leads fríos, meses después)</h2>
+<pre><code>Buenos días, [nombre]. Hace unos meses hablamos sobre las llamadas fuera de
+horario en [NOMBRE FUNERARIA]. Hemos mejorado bastante el asistente desde
+entonces y ya trabajamos con varias funerarias de la zona. ¿Le apetece que le
+enseñe cómo está ahora, en 15 minutos? Sin compromiso.
+</code></pre>
+<hr />
+<p><em>Consejo: guarda cada envío en el Excel de leads (columna Estado + Notas) justo después de mandarlo, para no escribir dos veces al mismo sitio.</em></p></div></section>
+    <section class="view" id="v-dossier"><div class="doc"><p><strong>Su funeraria nunca pierde una llamada</strong></p>
+<p><em>Asistente de inteligencia artificial para atención 24/7</em></p>
+<p><strong>El problema</strong></p>
+<p>Una funeraria no tiene horario. Cuando una familia llama de madrugada, en fin de semana, o mientras el equipo está atendiendo otro servicio, y nadie contesta, esa familia llama a la siguiente funeraria de la lista. Es una pérdida de servicio silenciosa que casi nadie mide, pero que se repite más veces de las que se piensa.</p>
+<p><strong>La solución</strong></p>
+<ul>
+<li>
+<p>Un asistente de IA contesta siempre, con un tono cercano, respetuoso y profesional, adaptado a un momento delicado.</p>
+</li>
+<li>
+<p>Recoge los datos esenciales de la familia y avisa de inmediato a la persona de guardia por WhatsApp o llamada.</p>
+</li>
+<li>
+<p>Ante cualquier situación delicada, deriva automáticamente a una persona real — nunca improvisa con una familia.</p>
+</li>
+<li>
+<p>Funciona en horario nocturno, fines de semana y festivos, sin ampliar turnos de guardia ni contratar personal adicional.</p>
+</li>
+</ul>
+<p><strong>Planes</strong></p>
+<table>
+<thead>
+<tr>
+<th><strong>Plan</strong></th>
+<th><strong>Incluye</strong></th>
+<th><strong>Setup</strong></th>
+<th><strong>Mensual</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Básico</td>
+<td>Atención fuera de horario (noches y fines de semana)</td>
+<td>300 €</td>
+<td>150 €/mes</td>
+</tr>
+<tr>
+<td>Estándar</td>
+<td>Atención 24/7 + WhatsApp + resumen diario</td>
+<td>550 €</td>
+<td>280 €/mes</td>
+</tr>
+<tr>
+<td>Premium</td>
+<td>Todo + integración con software de gestión + multi-sede</td>
+<td>800 €</td>
+<td>400 €/mes</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Sin permanencia obligatoria. Puede darse de baja cuando quiera.</strong></p>
+<p><strong>Siguiente paso</strong></p>
+<p>Una demo de 15 minutos, en la que escuchará el asistente funcionando en tiempo real con una llamada de prueba a su propio teléfono. Sin compromiso.</p>
+<p><strong>[Tu nombre]  ·  [Teléfono]  ·  [Email]</strong></p></div></section>
+    <section class="view" id="v-guion"><div class="doc" id="guionDoc"><h1>GUION DEL ASISTENTE DE VOZ IA — FUNERARIAS</h1>
+<h3>El producto que vendes. Esto es lo que la IA dice cuando contesta el teléfono de la funeraria.</h3>
+<p>Este documento es la configuración base del asistente. Sirve para dos cosas:</p>
+<ol>
+<li><strong>Pegarlo como "system prompt" / instrucciones del agente</strong> en el proveedor de voz (Vapi, Retell, etc.), adaptando el <code>[NOMBRE_FUNERARIA]</code> y los datos de cada cliente.</li>
+<li><strong>Enseñárselo al cliente</strong> en la demo para que entienda exactamente qué va a decir la IA a sus familias — esto elimina el 80% del miedo ("¿qué va a decir esa máquina a la gente en el peor momento de su vida?").</li>
+</ol>
+<blockquote>
+<p><strong>Principio rector:</strong> en este sector, un tono equivocado hace más daño que una llamada perdida. El asistente prioriza SIEMPRE la calma, el respeto y la derivación temprana a un humano por encima de "resolver" la llamada solo. Ante la mínima duda, pasa a una persona.</p>
+</blockquote>
+<hr />
+<h2>1. IDENTIDAD Y TONO (system prompt base)</h2>
+<pre><code>Eres el asistente telefónico de [NOMBRE_FUNERARIA]. Contestas llamadas cuando el
+equipo no puede cogerlas (madrugada, fines de semana, festivos, o cuando están
+atendiendo otro servicio).
+
+Tu trabajo NO es cerrar ni gestionar el servicio funerario. Tu trabajo es: dar
+calma, recoger los datos mínimos imprescindibles y avisar de inmediato a la
+persona de guardia para que devuelva la llamada cuanto antes.
+
+TONO:
+- Habla despacio, con voz serena y cálida. Nunca con prisa.
+- Trato de usted siempre.
+- Frases cortas. Silencios permitidos. No atropelles.
+- Cero lenguaje comercial, cero entusiasmo, cero &quot;que tenga un buen día&quot;.
+- Empatía sobria: acompañas, no dramatizas.
+
+TRANSPARENCIA (obligatorio por ley, Reglamento UE de IA art. 50):
+En los primeros segundos debes dejar claro que eres un asistente virtual, de forma
+natural y sin que suene frío.
+
+REGLA DE ORO:
+Ante cualquier situación delicada, ambigua, técnica, o que no sabes resolver con
+total seguridad, NO improvisas: avisas de que una persona del equipo llamará de
+inmediato y tomas el contacto. Es mejor derivar de más que de menos.
+</code></pre>
+<hr />
+<h2>2. FLUJO DE LLAMADA</h2>
+<h3>2.1 Apertura (primeros 10 segundos)</h3>
+<blockquote>
+<p><em>"Funeraria [NOMBRE], buenas noches. Le atiende el asistente virtual del servicio de guardia. Dígame, ¿en qué puedo ayudarle?"</em></p>
+</blockquote>
+<ul>
+<li>De día se sustituye "buenas noches" por "buenos días/buenas tardes".</li>
+<li>La frase "asistente virtual" cumple la transparencia legal sin sonar a robot.</li>
+</ul>
+<h3>2.2 Clasificación de la llamada (escucha primero)</h3>
+<p>El asistente identifica en silencio cuál de estos casos es y actúa en consecuencia:</p>
+<table>
+<thead>
+<tr>
+<th>Tipo de llamada</th>
+<th>Qué hace el asistente</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>A. Fallecimiento — necesitan el servicio ya</strong></td>
+<td>Prioridad máxima. Recoge datos mínimos y avisa a guardia inmediatamente.</td>
+</tr>
+<tr>
+<td><strong>B. Consulta sobre un servicio en curso</strong> (velatorio, horario de sala, flores)</td>
+<td>Da la info si es pública y sencilla; si no, toma nota y deriva.</td>
+</tr>
+<tr>
+<td><strong>C. Consulta comercial / presupuesto / seguros</strong></td>
+<td>No es urgente. Toma datos y dice que el equipo llamará en horario.</td>
+</tr>
+<tr>
+<td><strong>D. Proveedor, administración, prensa, error</strong></td>
+<td>Toma recado y deriva.</td>
+</tr>
+<tr>
+<td><strong>E. Situación delicada o que no entiende</strong></td>
+<td>Deriva a persona real de inmediato.</td>
+</tr>
+</tbody>
+</table>
+<h3>2.3 Caso A — Fallecimiento (el crítico)</h3>
+<p>Guion orientativo, no literal palabra por palabra:</p>
+<blockquote>
+<p><em>"Lo siento mucho. Voy a ayudarle a que el equipo se ponga en contacto con usted enseguida. Para avisarles ahora mismo, necesito solo un par de datos, ¿de acuerdo?"</em></p>
+</blockquote>
+<p>Recoge <strong>solo lo imprescindible</strong> (nada de interrogatorio):</p>
+<ol>
+<li><strong>Nombre de quien llama</strong> y <strong>teléfono de contacto</strong> (repetir el teléfono en voz alta para confirmar dígito a dígito).</li>
+<li><strong>¿Dónde se encuentra la persona fallecida ahora mismo?</strong> (domicilio, hospital, residencia, y localidad).</li>
+<li><em>(Si surge de forma natural)</em> nombre de la persona fallecida.</li>
+</ol>
+<p>Luego <strong>cierra dando seguridad</strong>:</p>
+<blockquote>
+<p><em>"Muchas gracias. Aviso ahora mismo a la persona de guardia y le devolverá la llamada en unos minutos a este número. No se preocupe por nada, quedan atendidos."</em></p>
+</blockquote>
+<p><strong>Importante:</strong> el asistente NO da precios, NO agenda el servicio, NO promete horarios concretos del velatorio, NO da instrucciones médicas o legales. Solo recoge y avisa.</p>
+<h3>2.4 Datos mínimos que SIEMPRE debe capturar</h3>
+<ul>
+<li>Nombre de la persona que llama</li>
+<li>Teléfono de devolución (confirmado en voz alta)</li>
+<li>Motivo en una frase</li>
+<li>Localidad / lugar</li>
+<li>Nivel de urgencia (alta / normal)</li>
+</ul>
+<hr />
+<h2>3. REGLAS DE DERIVACIÓN A HUMANO (las que dan confianza al cliente)</h2>
+<p>El asistente pasa la llamada o avisa para llamada inmediata <strong>siempre</strong> que:</p>
+<ul>
+<li>Sea un <strong>fallecimiento</strong> (siempre urgencia alta → aviso inmediato).</li>
+<li>La persona esté muy afectada, llore, o cueste entenderla.</li>
+<li>Pregunte por <strong>precios, contratos, seguros de decesos o trámites legales</strong>.</li>
+<li>Haya una <strong>reclamación o queja</strong>.</li>
+<li>Pida hablar con una persona concreta.</li>
+<li>El asistente <strong>no entienda</strong> la petición tras un intento de aclararla.</li>
+<li>Cualquier cosa que se salga del guion.</li>
+</ul>
+<blockquote>
+<p>El cliente (la funeraria) decide en la configuración qué casos se derivan SIEMPRE sin excepción. Esto se pone por escrito y es el argumento de venta más potente frente al miedo.</p>
+</blockquote>
+<hr />
+<h2>4. AVISO A LA PERSONA DE GUARDIA (mensajes automáticos)</h2>
+<p>Cuando el asistente cuelga, dispara un aviso por WhatsApp/SMS y, en urgencia alta, además una llamada. Plantillas:</p>
+<p><strong>WhatsApp/SMS — urgencia alta (fallecimiento):</strong></p>
+<pre><code>🔴 GUARDIA — AVISO URGENTE
+[NOMBRE_FUNERARIA]
+
+Llamada recibida: [hora]
+Quien llama: [nombre] — Tel: [teléfono]
+Motivo: Fallecimiento
+Lugar: [localidad / hospital / domicilio]
+Nota: [transcripción breve]
+
+➡️ Devolver la llamada cuanto antes.
+</code></pre>
+<p><strong>WhatsApp/SMS — urgencia normal (consulta):</strong></p>
+<pre><code>🟡 Aviso — [NOMBRE_FUNERARIA]
+[hora] — [nombre] ([teléfono])
+Motivo: [consulta breve]
+No urgente. Devolver en horario.
+</code></pre>
+<p><strong>Resumen diario (plan Estándar/Premium), enviado cada mañana:</strong></p>
+<pre><code>Resumen de guardia — [fecha]
+Total llamadas atendidas: X
+🔴 Urgentes (fallecimiento): X — todas avisadas
+🟡 Consultas: X
+Detalle: [lista con hora, nombre, teléfono, motivo]
+</code></pre>
+<hr />
+<h2>5. FRASES DE SEGURIDAD (para momentos difíciles)</h2>
+<ul>
+<li>Persona muy afectada: <em>"Estoy aquí con usted. Respire tranquilo. Le paso ahora mismo con una persona del equipo."</em></li>
+<li>No entiende / mala cobertura: <em>"Perdone, quiero asegurarme de atenderle bien. Le va a llamar una persona del equipo ahora mismo, ¿me confirma su número de teléfono?"</em></li>
+<li>Insisten en un precio: <em>"Le entiendo. Para darle esa información con precisión, prefiero que le llame directamente una persona del equipo, así no le doy ningún dato equivocado en un momento así."</em></li>
+</ul>
+<hr />
+<h2>6. LO QUE EL ASISTENTE NUNCA HACE</h2>
+<ul>
+<li>Nunca da precios ni presupuestos.</li>
+<li>Nunca da consejos médicos, legales o sobre trámites (certificados, seguros).</li>
+<li>Nunca dice que "no puede ayudar" y cuelga: siempre toma contacto y deriva.</li>
+<li>Nunca insiste ni repregunta más de una vez si la persona está afectada.</li>
+<li>Nunca oculta que es un asistente virtual si se lo preguntan directamente.</li>
+<li>Nunca inventa horarios de velatorio, salas o disponibilidad.</li>
+</ul>
+<hr />
+<h2>7. CHECKLIST DE CONFIGURACIÓN POR CLIENTE</h2>
+<p>Antes de poner en marcha a cada funeraria, define con ella:</p>
+<ul>
+<li>[ ] Nombre exacto con el que contesta el asistente.</li>
+<li>[ ] Número(s) de guardia y orden de aviso (WhatsApp → llamada si no responde en X min).</li>
+<li>[ ] Horario en que entra el asistente (solo fuera de horario / 24-7).</li>
+<li>[ ] Info pública que SÍ puede dar (dirección, cómo llegar al tanatorio).</li>
+<li>[ ] Lista de casos que se derivan SIEMPRE a humano (firmada por el cliente).</li>
+<li>[ ] Voz elegida (probar 2-3 y que el cliente escoja).</li>
+<li>[ ] Frase de transparencia validada con el cliente.</li>
+</ul>
+<hr />
+<p><em>Este guion es propiedad de tu negocio y forma parte del "know-how" (cláusula séptima del contrato). Se adapta por cliente pero la base se reutiliza.</em></p></div></section>
+    <section class="view" id="v-montaje"><div class="doc" id="montajeDoc"><h1>GUÍA DE MONTAJE TÉCNICO — De cero a una demo funcionando</h1>
+<h3>Para alguien que aún no ha elegido proveedor. Objetivo: tener una llamada de prueba real que enseñar a un cliente.</h3>
+<blockquote>
+<p>No necesitas ser técnico. Estas plataformas se configuran con formularios y texto (el guion que ya tienes en <code>guion_asistente_IA_funerarias.md</code>). Tu primer objetivo NO es algo perfecto: es una demo que suene bien al teléfono para cerrar tu primer cliente.</p>
+</blockquote>
+<hr />
+<h2>1. Cómo funciona por dentro (en 30 segundos)</h2>
+<p>Un asistente de voz IA junta 4 piezas:</p>
+<ol>
+<li><strong>Telefonía</strong> — el número que suena (se contrata dentro de la plataforma o vía Twilio).</li>
+<li><strong>Voz a texto (STT)</strong> — entiende lo que dice la familia.</li>
+<li><strong>El "cerebro" (LLM)</strong> — decide qué responder, siguiendo tu guion.</li>
+<li><strong>Texto a voz (TTS)</strong> — la voz que oye la familia. <em>Aquí es donde se gana o se pierde la venta: la voz tiene que sonar humana y cálida en español.</em></li>
+</ol>
+<p>Encima va la <strong>orquestación</strong> (avisar al de guardia por WhatsApp, resumen diario), que se monta con n8n o Make conectados a la plataforma.</p>
+<hr />
+<h2>2. Qué proveedor elegir</h2>
+<p>Los dos estándar del mercado son <strong>Vapi</strong> y <strong>Retell</strong>. Los dos valen para empezar. Diferencia práctica:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th><strong>Vapi</strong></th>
+<th><strong>Retell</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Filosofía</td>
+<td>Más flexible, tú eliges cada pieza (voz, LLM, STT)</td>
+<td>Más "todo en uno", más rápido de arrancar</td>
+</tr>
+<tr>
+<td>Curva de aprendizaje</td>
+<td>Algo más técnica</td>
+<td>Más sencilla para empezar</td>
+</tr>
+<tr>
+<td>Coste orientativo*</td>
+<td>~0,05 $/min base + tus API (voz/LLM) → <strong>~0,13–0,30 $/min</strong> total</td>
+<td>~0,07 $/min base, con voz/LLM incluidos → <strong>~0,11–0,15 $/min</strong> total</td>
+</tr>
+<tr>
+<td>RGPD / datos en UE</td>
+<td>Ofrece selección de región</td>
+<td>Ofrece selección de región; DPA en todos los planes</td>
+</tr>
+</tbody>
+</table>
+<p>* <em>Precios de referencia a mediados de 2026; verifícalos en la web de cada uno antes de decidir, cambian a menudo.</em></p>
+<p><strong>Mi recomendación para ti (aún no has empezado):</strong> empieza por <strong>Retell</strong> para montar la primera demo rápido y sin pelearte con integraciones. Si más adelante quieres afinar voz y coste por minuto, prueba Vapi en paralelo. La decisión no es irreversible: el guion que tienes sirve para cualquiera de los dos.</p>
+<h3>Sobre la voz (crítico en español)</h3>
+<p>La voz por defecto suele sonar "americana hablando español". Prueba voces en <strong>español de España</strong> de proveedores como <strong>ElevenLabs</strong> o <strong>Cartesia</strong>, que son las que mejor suenan. Dedica tiempo a esto: en este sector, una voz fría hunde la venta. Prueba 2-3 y quédate con la más cálida y natural.</p>
+<hr />
+<h2>3. ⚠️ RGPD — léelo antes de firmar tu primer cliente</h2>
+<p>Las plataformas líderes (Vapi, Retell, Bland) son <strong>estadounidenses</strong>. Usarlas con datos de personas en la UE sin las salvaguardas correctas puede incumplir el RGPD. Para hacerlo bien:</p>
+<ul>
+<li>Activa la <strong>residencia de datos en la UE</strong> (region selection) si la plataforma lo ofrece.</li>
+<li>Firma el <strong>DPA (Data Processing Agreement / Acuerdo de Encargado de Tratamiento)</strong> con el proveedor — Retell lo incluye en todos los planes.</li>
+<li>No guardes grabaciones más tiempo del necesario; activa la <strong>redacción automática de datos personales</strong> en transcripciones si está disponible.</li>
+<li>En tu contrato con el cliente ya está previsto: tú eres <strong>encargado del tratamiento</strong> y el proveedor de IA es un subencargado que debes informar al cliente (cláusula quinta de tu contrato).</li>
+<li><strong>Valida esto con tu gestoría/abogado antes del primer cliente.</strong> No es opcional en este sector por la sensibilidad de los datos.</li>
+</ul>
+<p>Si en algún momento un cliente grande lo exige, existen alternativas con alojamiento europeo; para empezar, EU region + DPA de Retell/Vapi es suficiente para la mayoría.</p>
+<hr />
+<h2>4. Montar la demo — pasos concretos (1-2 tardes)</h2>
+<ol>
+<li><strong>Crea cuenta</strong> en Retell (o Vapi). Añade método de pago (se paga por minuto usado; una demo cuesta céntimos).</li>
+<li><strong>Activa región UE</strong> en ajustes de la cuenta.</li>
+<li><strong>Crea un agente nuevo</strong> y pega como instrucciones el bloque de <code>guion_asistente_IA_funerarias.md</code> (apartado 1 + flujo del apartado 2). Cambia <code>[NOMBRE_FUNERARIA]</code> por un nombre de prueba, p. ej. "Funeraria Demo".</li>
+<li><strong>Elige voz</strong> española y prueba varias hablando con el agente desde el navegador.</li>
+<li><strong>Consigue un número de teléfono</strong> dentro de la plataforma (compra un número español si te deja, o usa el de pruebas).</li>
+<li><strong>Llámate a ti mismo</strong> y haz de "familia": simula una llamada de madrugada por un fallecimiento. Ajusta el guion hasta que suene sereno y no atropelle.</li>
+<li><strong>Aviso a guardia (opcional para la demo, necesario para clientes):</strong> conecta la plataforma con <strong>n8n</strong> o <strong>Make</strong> para que, al acabar la llamada, envíe el WhatsApp/SMS del apartado 4 del guion. Para la demo puedes enseñar esto "en maqueta".</li>
+<li><strong>Graba una llamada de ejemplo buena</strong> (con permiso, es tu propia demo) para tenerla de respaldo por si en una demo en directo falla la cobertura.</li>
+</ol>
+<h3>Truco para las demos de venta</h3>
+<p>En la llamada comercial, haz una <strong>llamada de prueba en directo al móvil del propio interesado</strong> (apartado del guion de ventas). Escuchar el asistente contestándole a él, con su nombre de funeraria, cierra más que cualquier explicación.</p>
+<hr />
+<h2>5. WhatsApp de aviso a guardia (para clientes reales)</h2>
+<p>Para mandar el WhatsApp automático necesitas una de estas vías:
+- <strong>WhatsApp Business API</strong> vía un proveedor (Twilio, 360dialog, etc.) — lo más profesional.
+- Para empezar y abaratar: <strong>SMS</strong> (más simple de activar) o incluso una <strong>llamada automática</strong> al de guardia leyendo los datos.</p>
+<p>Orquesta el flujo "llamada terminada → mandar aviso" con <strong>n8n</strong> (open source, puedes autoalojarlo en la UE, ideal para RGPD) o <strong>Make</strong> (más fácil, sin código).</p>
+<hr />
+<h2>6. Presupuesto real de arranque (mes 1)</h2>
+<table>
+<thead>
+<tr>
+<th>Concepto</th>
+<th>Coste orientativo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Plataforma voz IA (uso por minutos, pocos clientes)</td>
+<td>20–60 €/mes</td>
+</tr>
+<tr>
+<td>Número de teléfono</td>
+<td>1–5 €/mes por número</td>
+</tr>
+<tr>
+<td>n8n (autoalojado) o Make (plan básico)</td>
+<td>0–20 €/mes</td>
+</tr>
+<tr>
+<td>WhatsApp Business API / SMS</td>
+<td>según volumen, desde ~10 €/mes</td>
+</tr>
+<tr>
+<td><strong>Total realista al empezar</strong></td>
+<td><strong>~50–120 €/mes</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Encaja con el "coste fijo herramientas base 80 €/mes" y "25 €/cliente" de tu plan financiero. Cuadra.</p>
+<hr />
+<h2>7. Orden recomendado</h2>
+<ol>
+<li>Monta la demo (apartado 4) — <strong>antes</strong> de la primera llamada de cierre.</li>
+<li>Valida RGPD con gestoría (apartado 3).</li>
+<li>Cuando tengas el primer "sí", monta el aviso a guardia real (apartado 5) para ese cliente.</li>
+<li>Repite y reutiliza: el guion base y los flujos se copian de un cliente a otro.</li>
+</ol>
+<hr />
+<p><em>Fuentes de referencia sobre proveedores y RGPD (verifica precios actuales antes de contratar): retellai.com/pricing, vapi.ai/pricing, y guías de cumplimiento RGPD para plataformas de voz IA en la UE.</em></p></div></section>
+    <section class="view" id="v-plan"><div class="doc"><p><strong>PLAN DE NEGOCIO</strong></p>
+<p><em>Automatización con IA para funerarias y tanatorios · Castilla-La Mancha y expansión nacional</em></p>
+<h1>1. Resumen ejecutivo</h1>
+<p>El proyecto consiste en ofrecer a funerarias y tanatorios un asistente de inteligencia artificial que atiende llamadas y mensajes de forma permanente (24 horas, 365 días al año), evitando la pérdida de servicios cuando el personal no puede coger el teléfono: de madrugada, en otro servicio, o fuera de horario de oficina.</p>
+<p>El sector funerario reúne tres condiciones que lo hacen especialmente atractivo frente a otros nichos ya saturados por agencias de IA (clínicas dentales, fisioterapia): ticket medio muy alto (3.000-6.000 € por servicio), una urgencia extrema en la decisión de compra (quien no contesta pierde el cliente de forma inmediata y total, sin segunda oportunidad) y muy baja digitalización todavía en la mayoría de negocios familiares del sector.</p>
+<p>Objetivo a 6 meses: alcanzar 10.000 €/mes de facturación mediante la captación progresiva de clientes, combinando cuota de configuración inicial y cuota mensual recurrente. El detalle numérico está en el archivo Excel adjunto ("Plan Financiero").</p>
+<h1>2. Propuesta de valor</h1>
+<ul>
+<li>
+<p>Cero llamadas perdidas: el asistente contesta siempre, con un tono cercano, respetuoso y profesional, adaptado a un contexto sensible.</p>
+</li>
+<li>
+<p>Recoge los datos esenciales del primer contacto y avisa de inmediato al personal de guardia por WhatsApp/SMS/llamada.</p>
+</li>
+<li>
+<p>Deriva automáticamente a una persona real en cualquier situación delicada o que no sabe resolver — nunca improvisa con una familia.</p>
+</li>
+<li>
+<p>Disponible en horario nocturno, fines de semana y festivos sin necesidad de ampliar turnos de guardia ni contratar personal adicional.</p>
+</li>
+<li>
+<p>Implementación rápida (1-2 semanas) y sin gran inversión inicial para el cliente, en comparación con las plataformas SaaS grandes del sector.</p>
+</li>
+</ul>
+<h1>3. Análisis de mercado</h1>
+<h2>3.1 Tamaño y características del sector</h2>
+<p>España cuenta con miles de funerarias y tanatorios, la gran mayoría de gestión familiar o independiente, con estructuras tecnológicas limitadas. En la zona de prospección inicial (Toledo, Ciudad Real, Alcázar de San Juan, Talavera de la Reina, Albacete, Cuenca, Tomelloso y Valdepeñas) se han identificado 29 funerarias y tanatorios activos, la mayoría independientes, algunos pertenecientes a cadenas regionales o nacionales (Mémora, Albia, Grupo Alborada).</p>
+<p>El sector funciona por guardias 24/7 con plantillas muy reducidas, lo que genera un coste constante (horas extra, turnos) y un riesgo real de no contestar en el peor momento posible.</p>
+<h2>3.2 Competencia identificada</h2>
+<table>
+<thead>
+<tr>
+<th><strong>Competidor</strong></th>
+<th><strong>Propuesta</strong></th>
+<th><strong>Precio de referencia</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Minute Call</td>
+<td>Recepcionista virtual (humano + IA) especializada en funerarias, ya con 45+ clientes (foco Málaga)</td>
+<td>Desde 250 €/mes, sin permanencia</td>
+</tr>
+<tr>
+<td>FunerFlow</td>
+<td>Plataforma SaaS modular: agente de voz IA + gestión de herencias. Lanzada en junio de 2026, escala nacional</td>
+<td>No público, orientado a empresas medianas/grandes</td>
+</tr>
+<tr>
+<td>Javadex (vertical técnicos, referencia de precio)</td>
+<td>Agencia especializada en agentes de voz IA para sectores de servicio urgente</td>
+<td>4.500-9.000 € setup + 80-250 €/mes</td>
+</tr>
+<tr>
+<td>Agencias generalistas (AI Hispania, sync-manager, etc.)</td>
+<td>Soluciones genéricas de agente de voz/WhatsApp, no especializadas en funerarias</td>
+<td>Variable, desde soluciones low-cost autoservicio</td>
+</tr>
+</tbody>
+</table>
+<p>Conclusión: ningún competidor identificado tiene presencia ni trato personal en Castilla-La Mancha. Los dos jugadores más relevantes (Minute Call, FunerFlow) están centrados en otras zonas o en un modelo más corporativo. La ventana de oportunidad es clara pero se está empezando a cerrar: FunerFlow lleva solo unas semanas en el mercado nacional, lo que hace prioritario moverse rápido.</p>
+<h1>4. Modelo de negocio y precios</h1>
+<p>Se proponen tres niveles de servicio, con precio de entrada por debajo de las agencias premium (Javadex) pero por encima de las soluciones frías de autoservicio, apoyado en trato personal y cercanía local:</p>
+<table>
+<thead>
+<tr>
+<th><strong>Plan</strong></th>
+<th><strong>Incluye</strong></th>
+<th><strong>Setup</strong></th>
+<th><strong>Cuota mensual</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Básico</td>
+<td>Atención fuera de horario (noches, fines de semana). Aviso al móvil de guardia.</td>
+<td>300 €</td>
+<td>150 €/mes</td>
+</tr>
+<tr>
+<td>Estándar</td>
+<td>Atención 24/7 completa + WhatsApp + resumen diario + agenda de primeras gestiones.</td>
+<td>550 €</td>
+<td>280 €/mes</td>
+</tr>
+<tr>
+<td>Premium</td>
+<td>Todo lo anterior + integración con software de gestión + multi-sede + prioridad de soporte.</td>
+<td>800 €</td>
+<td>400 €/mes</td>
+</tr>
+</tbody>
+</table>
+<p>Sin permanencia obligatoria (alineado con el estándar del sector, ver Minute Call), lo que reduce la fricción de la primera venta y facilita cerrar clientes desconfiados con la tecnología.</p>
+<h1>5. Plan comercial</h1>
+<h2>5.1 Leads ya identificados</h2>
+<p>29 funerarias y tanatorios localizados con nombre, teléfono y dirección (ver Excel "leads_toledo_ciudadreal_alcazar.xlsx", hoja Leads, categoría "Funerarias"). Priorizar los negocios independientes sobre las cadenas grandes (Mémora, Albia, Alborada), donde la decisión de compra es más lenta y centralizada.</p>
+<h2>5.2 Embudo de ventas</h2>
+<ul>
+<li>
+<ol>
+<li>Llamada en frío o WhatsApp inicial (guion en documento adjunto "Guion de llamada y manejo de objeciones").</li>
+</ol>
+</li>
+<li>
+<ol start="2">
+<li>Si hay interés: envío de dossier comercial de una página + propuesta de demo de 15 minutos.</li>
+</ol>
+</li>
+<li>
+<ol start="3">
+<li>Demo en vivo (llamada de prueba real al número del propio interesado).</li>
+</ol>
+</li>
+<li>
+<ol start="4">
+<li>Propuesta económica según plan (Básico/Estándar/Premium).</li>
+</ol>
+</li>
+<li>
+<ol start="5">
+<li>Firma de contrato (plantilla adjunta) y puesta en marcha (1-2 semanas).</li>
+</ol>
+</li>
+</ul>
+<h2>5.3 Ampliación geográfica</h2>
+<p>Con 29 leads locales no es posible sostener el crecimiento hasta el mes 6. A partir del mes 3, ampliar la prospección a otras provincias (Madrid, Toledo completo, Ciudad Real completo, resto de Castilla-La Mancha, y progresivamente el resto de España), ya que el servicio se entrega en remoto y no requiere presencia física.</p>
+<h1>6. Plan operativo</h1>
+<ul>
+<li>
+<p>Plataforma de voz/WhatsApp IA: proveedor con cumplimiento RGPD (a decidir tras pruebas, ej. Vapi, Retell o similar con alojamiento en la UE).</p>
+</li>
+<li>
+<p>Orquestación: automatización de flujos y aviso a guardia (n8n, Make o similar).</p>
+</li>
+<li>
+<p>Gestión de leads y seguimiento: Excel/CRM ligero (ya preparado).</p>
+</li>
+<li>
+<p>Tiempo dedicado estimado: 1-3 horas diarias, ampliable según ritmo de cierre de clientes.</p>
+</li>
+<li>
+<p>Presupuesto herramientas: 100-300 €/mes, escalable con el número de clientes activos (ver Plan Financiero).</p>
+</li>
+</ul>
+<h1>7. Plan financiero (resumen)</h1>
+<p>Proyección detallada con fórmulas editables en el archivo Excel, hoja "Plan Financiero". Resumen de hitos:</p>
+<table>
+<thead>
+<tr>
+<th><strong>Mes</strong></th>
+<th><strong>Clientes activos</strong></th>
+<th><strong>Ingresos totales estimados</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>1</td>
+<td>≈ 830 €</td>
+</tr>
+<tr>
+<td>2</td>
+<td>3</td>
+<td>≈ 1.930 €</td>
+</tr>
+<tr>
+<td>3</td>
+<td>6</td>
+<td>≈ 3.300 €</td>
+</tr>
+<tr>
+<td>4</td>
+<td>11</td>
+<td>≈ 5.750 €</td>
+</tr>
+<tr>
+<td>5</td>
+<td>17</td>
+<td>≈ 8.700 €</td>
+</tr>
+<tr>
+<td>6</td>
+<td>26</td>
+<td>≈ 12.200 €</td>
+</tr>
+</tbody>
+</table>
+<p>Los supuestos (precio medio, coste por cliente, ritmo de captación) son editables en las celdas amarillas del Excel y todo el resto del cálculo se actualiza automáticamente.</p>
+<h1>8. Plan legal (resumen — validar con gestoría/abogado)</h1>
+<ul>
+<li>
+<p>Alta como autónomo (Hacienda modelo 036/037 + RETA), epígrafe de IAE de servicios/consultoría tecnológica.</p>
+</li>
+<li>
+<p>Contrato de prestación de servicios con cláusula de protección de datos (documento adjunto), donde el proveedor actúa como encargado del tratamiento.</p>
+</li>
+<li>
+<p>Transparencia obligatoria: informar a los llamantes de que pueden estar hablando con un asistente de IA (Reglamento UE de IA, art. 50).</p>
+</li>
+<li>
+<p>Especial cuidado con datos sensibles gestionados por teléfono; usar proveedores tecnológicos con cumplimiento RGPD y alojamiento UE.</p>
+</li>
+<li>
+<p>Recomendable seguro de responsabilidad civil profesional una vez haya varios clientes activos.</p>
+</li>
+</ul>
+<h1>9. Riesgos y mitigación</h1>
+<table>
+<thead>
+<tr>
+<th><strong>Riesgo</strong></th>
+<th><strong>Mitigación</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Desconfianza del sector hacia dejar la atención en manos de una IA en un momento tan delicado</td>
+<td>Demo en vivo, derivación automática a persona real ante cualquier situación sensible, sin permanencia obligatoria para reducir el riesgo percibido</td>
+</tr>
+<tr>
+<td>Entrada de competidores grandes (FunerFlow) en la región</td>
+<td>Moverse rápido en los próximos 1-2 meses, cerrar clientes con relación personal y contrato, difícil de replicar por una plataforma nacional fría</td>
+</tr>
+<tr>
+<td>Leads locales insuficientes para el objetivo de 26 clientes en 6 meses</td>
+<td>Ampliar geografía progresivamente desde el mes 3, el servicio es 100% remoto</td>
+</tr>
+<tr>
+<td>Fallo técnico del asistente en una llamada real</td>
+<td>SLA definido en contrato, escalado humano garantizado, pruebas exhaustivas antes de cada puesta en marcha</td>
+</tr>
+</tbody>
+</table>
+<h1>10. Próximos pasos inmediatos</h1>
+<ul>
+<li>
+<p>Empezar a contactar los 29 leads de funerarias siguiendo el guion adjunto, priorizando independientes.</p>
+</li>
+<li>
+<p>Preparar una demo funcional básica (aunque sea con un proveedor low-cost inicial) antes de la primera llamada de cierre.</p>
+</li>
+<li>
+<p>Validar el contrato y el alta de autónomo con la gestoría antes de firmar el primer cliente.</p>
+</li>
+<li>
+<p>Revisar el Plan Financiero cada semana y ajustar el ritmo de captación real frente al proyectado.</p>
+</li>
+</ul></div></section>
+    <section class="view" id="v-contrato"><div class="doc"><p><strong>CONTRATO DE PRESTACIÓN DE SERVICIOS DE AUTOMATIZACIÓN CON INTELIGENCIA ARTIFICIAL</strong></p>
+<p>En [ciudad], a [fecha].</p>
+<h1>REUNIDOS</h1>
+<p>De una parte, [Tu nombre completo], mayor de edad, con NIF [NIF], actuando en calidad de profesional autónomo, con domicilio a efectos de notificaciones en [dirección] (en adelante, "el PROVEEDOR").</p>
+<p>De otra parte, [Nombre del cliente / razón social], con NIF/CIF [CIF], con domicilio en [dirección del cliente], representada en este acto por [nombre del representante], en calidad de [cargo] (en adelante, "el CLIENTE").</p>
+<p>Ambas partes se reconocen mutuamente capacidad legal suficiente para suscribir el presente contrato y, a tal efecto,</p>
+<h1>EXPONEN</h1>
+<p>I. Que el PROVEEDOR se dedica profesionalmente al diseño, implementación y mantenimiento de sistemas de automatización basados en inteligencia artificial (asistentes de voz, atención por WhatsApp y sistemas de gestión de llamadas y mensajes).</p>
+<p>II. Que el CLIENTE está interesado en contratar dichos servicios para su actividad, y ambas partes acuerdan formalizar el presente contrato con arreglo a las siguientes</p>
+<h1>CLÁUSULAS</h1>
+<h2>PRIMERA. Objeto del contrato</h2>
+<p>El PROVEEDOR se compromete a prestar al CLIENTE los siguientes servicios (marcar los que apliquen):</p>
+<ul>
+<li>
+<p>Implementación de un asistente de inteligencia artificial para la atención telefónica y/o por WhatsApp.</p>
+</li>
+<li>
+<p>Configuración de flujos de conversación, respuestas automáticas y derivación de llamadas/mensajes urgentes a personal del CLIENTE.</p>
+</li>
+<li>
+<p>Integración con el sistema de agenda/calendario del CLIENTE.</p>
+</li>
+<li>
+<p>Mantenimiento, supervisión y ajustes mensuales del sistema (soporte de [horas/incidencias incluidas]).</p>
+</li>
+<li>
+<p>[Otros servicios específicos acordados]</p>
+</li>
+</ul>
+<h2>SEGUNDA. Precio y forma de pago</h2>
+<p>El CLIENTE abonará al PROVEEDOR los siguientes importes (IVA no incluido):</p>
+<ul>
+<li>
+<p>Cuota de configuración inicial (pago único): [importe] €.</p>
+</li>
+<li>
+<p>Cuota mensual de mantenimiento y uso: [importe] €/mes.</p>
+</li>
+</ul>
+<p>El pago se realizará mediante [transferencia / domiciliación] dentro de los primeros [5] días de cada mes, previa emisión de factura por el PROVEEDOR. El retraso en el pago superior a [15] días facultará al PROVEEDOR a suspender el servicio, previo aviso, sin que ello genere responsabilidad alguna para el PROVEEDOR.</p>
+<h2>TERCERA. Duración y renovación</h2>
+<p>El presente contrato tiene una duración inicial de [6 / 12] meses a contar desde la fecha de firma, prorrogándose automáticamente por periodos iguales salvo que cualquiera de las partes comunique su voluntad de no renovar con una antelación mínima de [30] días a la fecha de vencimiento.</p>
+<h2>CUARTA. Nivel de servicio y disponibilidad</h2>
+<p>El PROVEEDOR empleará medios técnicos razonables para garantizar una disponibilidad del sistema del [95-99] % mensual, excluyendo caídas imputables a terceros proveedores tecnológicos (operadoras, plataformas de mensajería, proveedores de IA, etc.), sobre los que el PROVEEDOR no tiene control directo. Las incidencias se atenderán en un plazo máximo de [24-48] horas laborables.</p>
+<h2>QUINTA. Protección de datos personales</h2>
+<p>En cumplimiento del Reglamento (UE) 2016/679 (RGPD) y la Ley Orgánica 3/2018 (LOPDGDD), ambas partes acuerdan lo siguiente:</p>
+<ul>
+<li>
+<p>El CLIENTE es el RESPONSABLE del tratamiento de los datos personales de sus clientes/usuarios finales (por ejemplo, datos recabados en llamadas o mensajes atendidos por el asistente de IA).</p>
+</li>
+<li>
+<p>El PROVEEDOR actúa como ENCARGADO DEL TRATAMIENTO, y únicamente tratará dichos datos siguiendo las instrucciones documentadas del CLIENTE, para la finalidad exclusiva de prestar el servicio objeto de este contrato.</p>
+</li>
+<li>
+<p>El PROVEEDOR se compromete a: (a) mantener la confidencialidad de los datos; (b) aplicar medidas técnicas y organizativas adecuadas; (c) no subcontratar el tratamiento sin autorización del CLIENTE, salvo proveedores tecnológicos necesarios para el servicio (por ejemplo, plataforma de IA de voz/WhatsApp: [nombre del proveedor tecnológico]), que serán informados al CLIENTE; (d) asistir al CLIENTE en el ejercicio de derechos de los interesados y en la notificación de brechas de seguridad; (e) suprimir o devolver los datos al finalizar la prestación del servicio.</p>
+</li>
+<li>
+<p>El CLIENTE se compromete a informar a sus propios clientes/usuarios de que pueden ser atendidos por un sistema de inteligencia artificial (transparencia conforme al artículo 50 del Reglamento (UE) 2024/1689, de Inteligencia Artificial), salvo que dicha circunstancia resulte evidente por el contexto.</p>
+</li>
+</ul>
+<p>Las partes podrán firmar un Anexo de Encargado de Tratamiento más detallado si así lo requiere la naturaleza de los datos tratados.</p>
+<h2>SEXTA. Confidencialidad</h2>
+<p>Ambas partes se comprometen a mantener la más estricta confidencialidad sobre la información técnica, comercial y de negocio a la que tengan acceso con motivo de la ejecución de este contrato, tanto durante su vigencia como después de su finalización.</p>
+<h2>SÉPTIMA. Propiedad intelectual</h2>
+<p>Salvo pacto en contrario, la configuración específica desarrollada para el CLIENTE (guiones, flujos de conversación, integraciones a medida) podrá ser utilizada exclusivamente por el CLIENTE mientras el presente contrato esté vigente. El PROVEEDOR conserva la propiedad de las herramientas, metodologías, plantillas base y know-how general empleado para prestar el servicio, pudiendo reutilizarlo con otros clientes.</p>
+<h2>OCTAVA. Limitación de responsabilidad</h2>
+<p>El PROVEEDOR no será responsable de pérdidas de negocio, llamadas no atendidas o daños indirectos derivados de fallos ajenos a su control (cortes de suministro eléctrico, caídas de proveedores tecnológicos externos, errores del CLIENTE al facilitar información, etc.). La responsabilidad total del PROVEEDOR frente al CLIENTE, en cualquier caso, quedará limitada al importe abonado por el CLIENTE en los [3] meses anteriores al hecho causante.</p>
+<h2>NOVENA. Resolución del contrato</h2>
+<p>Cualquiera de las partes podrá resolver el presente contrato en caso de incumplimiento grave de la otra parte no subsanado en el plazo de 15 días naturales tras requerimiento fehaciente. El CLIENTE podrá además desistir del contrato con un preaviso de 30 días, sin perjuicio del pago de los servicios ya prestados.</p>
+<h2>DÉCIMA. Legislación aplicable y jurisdicción</h2>
+<p>El presente contrato se rige por la legislación española. Para cualquier controversia, las partes se someten a los Juzgados y Tribunales de [ciudad], con renuncia a cualquier otro fuero que pudiera corresponderles.</p>
+<p>Y en prueba de conformidad, ambas partes firman el presente contrato por duplicado y a un solo efecto, en el lugar y fecha indicados en el encabezamiento.</p>
+<table>
+<thead>
+<tr>
+<th><strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong>___ EL PROVEEDOR [Tu nombre completo]</th>
+<th><strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong>___ EL CLIENTE [Nombre del cliente / razón social]</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table></div></section>
+
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const LEADS = [{"id": 0, "empresa": "Nueva Funeraria de Toledo", "tel": "+34 925 22 52 55", "ciudad": "Toledo", "prov": "Toledo", "dir": "P.º de San Eugenio, 0, 45003 Toledo", "rating": 3.9, "resenas": 47, "tipo": "Independiente", "origen": "Excel", "prioridad": "Alta"}, {"id": 1, "empresa": "Tanatorio de Toledo", "tel": "+34 925 21 54 17", "ciudad": "Toledo", "prov": "Toledo", "dir": "P.º de San Eugenio, 0, 45003 Toledo", "rating": 5, "resenas": 1, "tipo": "Independiente", "origen": "Excel", "prioridad": "Alta"}, {"id": 2, "empresa": "Funerarias Toledo", "tel": "+34 825 76 50 79", "ciudad": "Toledo", "prov": "Toledo", "dir": "C. San Pedro el Verde, 38, 45004 Toledo", "rating": 5, "resenas": 1, "tipo": "Independiente", "origen": "Excel", "prioridad": "Alta"}, {"id": 3, "empresa": "San Román Servicios Funerarios", "tel": "+34 925 22 15 22", "ciudad": "Toledo", "prov": "Toledo", "dir": "C. Miguel de Cervantes, 4, 45001 Toledo", "rating": 1.7, "resenas": 11, "tipo": "Independiente", "origen": "Excel", "prioridad": "Alta"}, {"id": 4, "empresa": "Tanatorio Numancia De La Sagra", "tel": "+34 925 22 15 22", "ciudad": "Numancia de la Sagra", "prov": "Toledo", "dir": "Av. de la Industria, 91, 45230", "rating": 1, "resenas": 5, "tipo": "Independiente", "origen": "Excel", "prioridad": "Alta"}, {"id": 5, "empresa": "Tanatorio - Crematorio Ciudad Real", "tel": "+34 926 22 14 15", "ciudad": "Ciudad Real", "prov": "Ciudad Real", "dir": "Cam. de la Guija, 21, 13002 Ciudad Real", "rating": 3.8, "resenas": 103, "tipo": "Independiente", "origen": "Excel", "prioridad": "Alta"}, {"id": 6, "empresa": "Funeraria Tanatorio Alfonso X El Sabio", "tel": "+34 926 21 71 83", "ciudad": "Ciudad Real", "prov": "Ciudad Real", "dir": "C. Tomelloso, 8, 13005 Ciudad Real", "rating": 4, "resenas": 22, "tipo": "Independiente", "origen": "Excel", "prioridad": "Alta"}, {"id": 7, "empresa": "Servicios Funerarios Los Llanos (Albia)", "tel": "+34 926 21 28 59", "ciudad": "Ciudad Real", "prov": "Ciudad Real", "dir": "C. Socuéllamos, 31, 13001 Ciudad Real", "rating": 5, "resenas": 7, "tipo": "Cadena", "origen": "Excel", "prioridad": "Baja"}, {"id": 8, "empresa": "Enalta Servicios Funerarios Conmemorativos", "tel": "+34 926 21 14 00", "ciudad": "Ciudad Real", "prov": "Ciudad Real", "dir": "Rda. de Alarcos, 20, 13002 Ciudad Real", "rating": 5, "resenas": 1, "tipo": "Cadena", "origen": "Excel", "prioridad": "Baja"}, {"id": 9, "empresa": "Velatorio Ciudad de Miguelturra", "tel": "+34 926 20 77 75", "ciudad": "Miguelturra", "prov": "Ciudad Real", "dir": "Av. de Alarcos, 3, 13170 Miguelturra", "rating": null, "resenas": null, "tipo": "Independiente", "origen": "Excel", "prioridad": "Alta"}, {"id": 10, "empresa": "Tanatorio Miguelturra y Fun. Virgen de la Estrella", "tel": "+34 661 48 91 89", "ciudad": "Miguelturra", "prov": "Ciudad Real", "dir": "Camino Ciruelo, s/n, 13170 Miguelturra", "rating": 4.9, "resenas": 10, "tipo": "Independiente", "origen": "Excel", "prioridad": "Alta"}, {"id": 11, "empresa": "Servicios Funerarios Ntra. Sra. de Atocha", "tel": "+34 926 64 74 00", "ciudad": "Manzanares", "prov": "Ciudad Real", "dir": "C. de la Vid, 11, 13200 Manzanares", "rating": 2.6, "resenas": 8, "tipo": "Independiente", "origen": "Excel", "prioridad": "Alta"}, {"id": 12, "empresa": "Tanatorio La Estrella Servicios Funerarios", "tel": "+34 926 71 26 06", "ciudad": "Almadén", "prov": "Ciudad Real", "dir": "Polígono Las Nieves, s/n, 13400 Almadén", "rating": 4.5, "resenas": 22, "tipo": "Independiente", "origen": "Excel", "prioridad": "Alta"}, {"id": 13, "empresa": "Funeraria y Tanatorio Ortega", "tel": "+34 926 55 03 01", "ciudad": "Alcázar de San Juan", "prov": "Ciudad Real", "dir": "C. Rondilla Cruz Verde, 45, 13600 Alcázar de San Juan", "rating": 3.1, "resenas": 20, "tipo": "Independiente", "origen": "Excel", "prioridad": "Alta"}, {"id": 14, "empresa": "Serfusa II S.L.", "tel": "+34 925 16 00 74", "ciudad": "Alcázar de San Juan", "prov": "Ciudad Real", "dir": "Cerro Mesado, 1, 13600 Alcázar de San Juan", "rating": 3, "resenas": 2, "tipo": "Independiente", "origen": "Excel", "prioridad": "Alta"}, {"id": 15, "empresa": "Funeraria Hermanos Agüero", "tel": "+34 925 72 20 76", "ciudad": "Talavera de la Reina", "prov": "Toledo", "dir": "P.º del Cementerio, 1, 45600 Talavera de la Reina", "rating": 3.4, "resenas": 50, "tipo": "Independiente", "origen": "Excel", "prioridad": "Alta"}, {"id": 16, "empresa": "Servisa - Servicios Funerarios", "tel": "+34 925 82 49 53", "ciudad": "Talavera de la Reina", "prov": "Toledo", "dir": "C. de la Paralela, 299, 45600 Talavera de la Reina", "rating": 3.8, "resenas": 4, "tipo": "Cadena", "origen": "Excel", "prioridad": "Baja"}, {"id": 17, "empresa": "Funeraria Albacete", "tel": "+34 967 21 88 92", "ciudad": "Albacete", "prov": "Albacete", "dir": "Av. Ramón y Cajal, 22, 02005 Albacete", "rating": 4.7, "resenas": 64, "tipo": "Independiente", "origen": "Excel", "prioridad": "Alta"}, {"id": 18, "empresa": "Tanatorio Municipal de Albacete", "tel": "+34 967 21 76 77", "ciudad": "Albacete", "prov": "Albacete", "dir": "Carr. Nueva del Cementerio, s/n, 02007 Albacete", "rating": 3.5, "resenas": 31, "tipo": "Independiente", "origen": "Excel", "prioridad": "Alta"}, {"id": 19, "empresa": "Tanatorio Cuenca Ntra. Sra. de la Paz", "tel": "+34 969 23 51 51", "ciudad": "Cuenca", "prov": "Cuenca", "dir": "Av. de los Alfares, 70, 16002 Cuenca", "rating": 4.8, "resenas": 13, "tipo": "Independiente", "origen": "Excel", "prioridad": "Alta"}, {"id": 20, "empresa": "Tanatorio San Julián (Grupo Alborada)", "tel": "+34 969 23 50 04", "ciudad": "Cuenca", "prov": "Cuenca", "dir": "Trav. Av. Cruz Roja Española, 1, 16002 Cuenca", "rating": 4.9, "resenas": 43, "tipo": "Cadena", "origen": "Excel", "prioridad": "Baja"}, {"id": 21, "empresa": "Conquenses Funeral - Funeral R. Alameda", "tel": "+34 969 23 30 40", "ciudad": "Cuenca", "prov": "Cuenca", "dir": "Ronda Oeste, 16004 Cuenca", "rating": 3.3, "resenas": 32, "tipo": "Independiente", "origen": "Excel", "prioridad": "Alta"}, {"id": 22, "empresa": "Tanatorio Virgen de las Viñas", "tel": "+34 926 53 80 59", "ciudad": "Tomelloso", "prov": "Ciudad Real", "dir": "C. del Pintor Velázquez, 1, 13700 Tomelloso", "rating": 4.9, "resenas": 14, "tipo": "Independiente", "origen": "Excel", "prioridad": "Alta"}, {"id": 23, "empresa": "Funeraria San José", "tel": "+34 926 51 01 15", "ciudad": "Tomelloso", "prov": "Ciudad Real", "dir": "C. Pintor Velázquez, 10, 13700 Tomelloso", "rating": 4, "resenas": 20, "tipo": "Independiente", "origen": "Excel", "prioridad": "Alta"}, {"id": 24, "empresa": "Enalta Tanatorio y Crematorio de Valdepeñas", "tel": "+34 926 32 22 85", "ciudad": "Valdepeñas", "prov": "Ciudad Real", "dir": "Ctra. San Carlos del Valle, 13300 Valdepeñas", "rating": 3.5, "resenas": 8, "tipo": "Cadena", "origen": "Excel", "prioridad": "Baja"}, {"id": 25, "empresa": "Tanatorio Los Llanos (Albia Valdepeñas)", "tel": "+34 926 31 29 25", "ciudad": "Valdepeñas", "prov": "Ciudad Real", "dir": "Av. de los Estudiantes, s/n, 13300 Valdepeñas", "rating": 4.8, "resenas": 6, "tipo": "Cadena", "origen": "Excel", "prioridad": "Baja"}, {"id": 26, "empresa": "Servicios Funerarios SFV", "tel": "+34 926 31 02 02", "ciudad": "Valdepeñas", "prov": "Ciudad Real", "dir": "C. Buensuceso, 40, 13300 Valdepeñas", "rating": null, "resenas": null, "tipo": "Independiente", "origen": "Excel", "prioridad": "Alta"}, {"id": 27, "empresa": "Servicios Funerarios Tanatorio de Villacañas", "tel": "+34 925 16 01 06", "ciudad": "Villacañas", "prov": "Toledo", "dir": "C. Alarcón, 40, 45860 Villacañas", "rating": 2.5, "resenas": 4, "tipo": "Independiente", "origen": "Excel", "prioridad": "Alta"}, {"id": 28, "empresa": "Tanatorio Villacañas", "tel": "+34 925 16 00 74", "ciudad": "Villacañas", "prov": "Toledo", "dir": "Av. de la Mancha, 1A, 45860 Villacañas", "rating": 4.2, "resenas": 6, "tipo": "Independiente", "origen": "Excel", "prioridad": "Alta"}, {"id": 29, "empresa": "Tanatorio Quintanar de la Orden", "tel": "+34 925 18 01 51", "ciudad": "Quintanar de la Orden", "prov": "Toledo", "dir": "Ctra. Miguel Esteban, s/n, 45800 Quintanar de la Orden", "rating": 4.3, "resenas": 3, "tipo": "Independiente", "origen": "Excel", "prioridad": "Alta"}, {"id": 30, "empresa": "Tanatorio Ntra. Sra. de Manjavacas", "tel": "+34 967 18 02 73", "ciudad": "Mota del Cuervo", "prov": "Cuenca", "dir": "C. El Chozo de las Nieves, 6, 16630 Mota del Cuervo", "rating": 3.4, "resenas": 5, "tipo": "Independiente", "origen": "Excel", "prioridad": "Alta"}, {"id": 31, "empresa": "Tanatorio Socuéllamos", "tel": "+34 926 53 06 18", "ciudad": "Socuéllamos", "prov": "Ciudad Real", "dir": "C. Manigua, 49, 13630 Socuéllamos", "rating": 3.8, "resenas": 10, "tipo": "Independiente", "origen": "Excel", "prioridad": "Alta"}, {"id": 32, "empresa": "Funeraria Tanatorio de Herencia", "tel": "+34 608 91 88 18", "ciudad": "Herencia", "prov": "Ciudad Real", "dir": "Av. de la Encarnación, s/n, 13640 Herencia", "rating": 2.9, "resenas": 7, "tipo": "Independiente", "origen": "Excel", "prioridad": "Alta"}, {"id": 33, "empresa": "Tanatorio Virgen de Criptana", "tel": "+34 926 58 96 85", "ciudad": "Campo de Criptana", "prov": "Ciudad Real", "dir": "Av. Comunidad de Madrid, 3, 13610 Campo de Criptana", "rating": 4.3, "resenas": 22, "tipo": "Independiente", "origen": "Excel", "prioridad": "Alta"}, {"id": 34, "empresa": "Funeraria Campo de Criptana S.L.", "tel": "+34 926 56 04 32", "ciudad": "Campo de Criptana", "prov": "Ciudad Real", "dir": "C. Convento, 26, 13610 Campo de Criptana", "rating": 2.5, "resenas": 2, "tipo": "Independiente", "origen": "Excel", "prioridad": "Alta"}, {"id": 35, "empresa": "Tanatorio Argamasilla de Alba", "tel": "+34 926 52 19 39", "ciudad": "Argamasilla de Alba", "prov": "Ciudad Real", "dir": "C. 8 de Marzo, 10, 13710 Argamasilla de Alba", "rating": 4.3, "resenas": 53, "tipo": "Independiente", "origen": "Excel", "prioridad": "Alta"}, {"id": 36, "empresa": "Tanatorio de Pedro Muñoz", "tel": "+34 926 56 84 79", "ciudad": "Pedro Muñoz", "prov": "Ciudad Real", "dir": "C. Almendros, 1, 13620 Pedro Muñoz", "rating": 3.3, "resenas": 14, "tipo": "Independiente", "origen": "Excel", "prioridad": "Alta"}, {"id": 37, "empresa": "Funeraria-Tanatorio SM Villarrobledo", "tel": "+34 691 33 29 79", "ciudad": "Villarrobledo", "prov": "Albacete", "dir": "C. del Cementerio, 02600 Villarrobledo", "rating": 1.8, "resenas": 5, "tipo": "Independiente", "origen": "Excel", "prioridad": "Alta"}, {"id": 38, "empresa": "Morgue Virrey Morcillo", "tel": "+34 967 13 84 16", "ciudad": "Villarrobledo", "prov": "Albacete", "dir": "Av. de La Mancha, 2, 02600 Villarrobledo", "rating": 3.9, "resenas": 13, "tipo": "Independiente", "origen": "Excel", "prioridad": "Alta"}, {"id": 39, "empresa": "Tanatorio y Funeraria Ntra. Sra. de la Caridad", "tel": "+34 691 33 46 56", "ciudad": "Villarrobledo", "prov": "Albacete", "dir": "C. de Sta. Clara, 10, 02600 Villarrobledo", "rating": 3.4, "resenas": 5, "tipo": "Independiente", "origen": "Excel", "prioridad": "Alta"}, {"id": 40, "empresa": "Tanatorio Daimiel", "tel": "+34 926 85 15 72", "ciudad": "Daimiel", "prov": "Ciudad Real", "dir": "Camino del Cementerio, 13250 Daimiel", "rating": 3.7, "resenas": 3, "tipo": "Independiente", "origen": "Excel", "prioridad": "Alta"}, {"id": 41, "empresa": "Morgue de Daimiel Virgen de Las Cruces", "tel": "+34 677 78 22 75", "ciudad": "Daimiel", "prov": "Ciudad Real", "dir": "Camino del Cementerio, s/n, 13250 Daimiel", "rating": 4.2, "resenas": 5, "tipo": "Independiente", "origen": "Excel", "prioridad": "Alta"}, {"id": 42, "empresa": "Tanatorio de Almagro", "tel": "+34 926 87 02 30", "ciudad": "Almagro", "prov": "Ciudad Real", "dir": "Vistillas de San Pedro, s/n, 13260 Almagro", "rating": 5, "resenas": 1, "tipo": "Independiente", "origen": "Excel", "prioridad": "Alta"}, {"id": 43, "empresa": "Tanatorio Bolaños de Calatrava", "tel": "+34 926 87 02 30", "ciudad": "Bolaños de Calatrava", "prov": "Ciudad Real", "dir": "C. Ánimas, 38, 13270 Bolaños de Calatrava", "rating": 5, "resenas": 1, "tipo": "Independiente", "origen": "Excel", "prioridad": "Alta"}, {"id": 44, "empresa": "Tanatorio San Román Consuegra", "tel": "+34 925 22 15 22", "ciudad": "Consuegra", "prov": "Toledo", "dir": "Pol. Industrial, C. 3, 5A, 45700 Consuegra", "rating": 5, "resenas": 2, "tipo": "Independiente", "origen": "Excel", "prioridad": "Alta"}, {"id": 45, "empresa": "Nuevo Tanatorio Madridejos", "tel": "+34 629 40 94 98", "ciudad": "Madridejos", "prov": "Toledo", "dir": "Autovía A-4, km 118, 45710 Madridejos", "rating": null, "resenas": null, "tipo": "Independiente", "origen": "Excel", "prioridad": "Alta"}, {"id": 46, "empresa": "Serv. Funerarios Ntra. Sra. de Atocha (Madridejos)", "tel": "+34 925 46 33 89", "ciudad": "Madridejos", "prov": "Toledo", "dir": "Av. Europa, km 117.600, 45710 Madridejos", "rating": null, "resenas": null, "tipo": "Independiente", "origen": "Excel", "prioridad": "Alta"}, {"id": 47, "empresa": "Tanatorio Castell", "tel": "+34 969 32 29 29", "ciudad": "Tarancón", "prov": "Cuenca", "dir": "C. San Juan, 55, 16400 Tarancón", "rating": 4.6, "resenas": 7, "tipo": "Independiente", "origen": "Excel", "prioridad": "Alta"}, {"id": 48, "empresa": "Tanatorio de Tarancón", "tel": "+34 969 32 52 45", "ciudad": "Tarancón", "prov": "Cuenca", "dir": "C. Antonio Machado, 19, 16400 Tarancón", "rating": 5, "resenas": 1, "tipo": "Independiente", "origen": "Excel", "prioridad": "Alta"}, {"id": 49, "empresa": "Tanatorio Municipal de Illescas (Albia)", "tel": "+34 925 50 15 10", "ciudad": "Illescas", "prov": "Toledo", "dir": "Camino de Yeles, s/n, 45200 Illescas", "rating": null, "resenas": null, "tipo": "Cadena", "origen": "Web", "prioridad": "Baja"}, {"id": 50, "empresa": "Tanatorio de Seseña", "tel": "+34 925 38 03 37", "ciudad": "Seseña", "prov": "Toledo", "dir": "Camino de Ciempozuelos, 3, 45223 Seseña", "rating": null, "resenas": null, "tipo": "Independiente", "origen": "Web", "prioridad": "Alta"}, {"id": 51, "empresa": "Funerarias Hermanos Agüero (Torrijos)", "tel": "+34 925 77 13 31", "ciudad": "Torrijos", "prov": "Toledo", "dir": "Torrijos", "rating": null, "resenas": null, "tipo": "Independiente", "origen": "Web", "prioridad": "Alta"}, {"id": 52, "empresa": "Servicios Funerarios Vértice (Ocaña)", "tel": "+34 918 91 02 01", "ciudad": "Ocaña", "prov": "Toledo", "dir": "Ocaña", "rating": null, "resenas": null, "tipo": "Cadena", "origen": "Web", "prioridad": "Baja"}, {"id": 53, "empresa": "Tanatorio de Hellín", "tel": "+34 967 54 20 40", "ciudad": "Hellín", "prov": "Albacete", "dir": "Ctra. de Pozohondo, s/n, 02420 Hellín", "rating": null, "resenas": null, "tipo": "Independiente", "origen": "Web", "prioridad": "Alta"}, {"id": 54, "empresa": "Tanatorio de Almansa Ntra. Sra. de Belén", "tel": "+34 608 46 50 67", "ciudad": "Almansa", "prov": "Albacete", "dir": "C. Tejares, 5, 02640 Almansa", "rating": null, "resenas": null, "tipo": "Independiente", "origen": "Web", "prioridad": "Alta"}, {"id": 55, "empresa": "Tanatorio de La Roda", "tel": "+34 967 44 17 97", "ciudad": "La Roda", "prov": "Albacete", "dir": "C. Jorquera, 25, 02630 La Roda", "rating": null, "resenas": null, "tipo": "Independiente", "origen": "Web", "prioridad": "Alta"}, {"id": 56, "empresa": "Tanatorio Cristo de Jamila", "tel": "+34 926 35 03 34", "ciudad": "Villanueva de los Infantes", "prov": "Ciudad Real", "dir": "C. Don Tomás el Médico, 108, 13320 Villanueva de los Infantes", "rating": null, "resenas": null, "tipo": "Independiente", "origen": "Web", "prioridad": "Alta"}, {"id": 57, "empresa": "Funeraria Virgen de Gracia", "tel": "+34 926 41 17 27", "ciudad": "Puertollano", "prov": "Ciudad Real", "dir": "Pol. Ind. Sepes, 309-312, 13500 Puertollano", "rating": null, "resenas": null, "tipo": "Independiente", "origen": "Web", "prioridad": "Alta"}, {"id": 58, "empresa": "Tanatorio Guadalajara", "tel": "+34 672 41 92 13", "ciudad": "Guadalajara", "prov": "Guadalajara", "dir": "Guadalajara (verificar dirección)", "rating": null, "resenas": null, "tipo": "Independiente", "origen": "Web", "prioridad": "Alta"}];
+const ESTADOS = ["Sin contactar","Contactado","Interesado","Demo agendada","Propuesta enviada","Cliente","No interesado","Recontactar"];
+const K_CRM="funerarias_crm_v1", K_FIN="funerarias_fin_v1", K_CHK="funerarias_chk_v1", K_SEC="funerarias_sec_v1";
+const $=s=>document.querySelector(s), $$=s=>document.querySelectorAll(s);
+const eur=n=>Math.round(n).toLocaleString('es-ES')+' €';
+const num=n=>n.toLocaleString('es-ES',{maximumFractionDigits:1});
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),1800);}
+
+/* ---------- STATE ---------- */
+function loadOverrides(){try{return JSON.parse(localStorage.getItem(K_CRM))||{}}catch(e){return {}}}
+let OV=loadOverrides();
+function leadState(l){
+  const o=OV[l.id]||{};
+  return {estado:o.estado??"Sin contactar", prioridad:o.prioridad??l.prioridad, proxima:o.proxima??(l.origen==="Web"?"Verificar tel. y 1er contacto":"Primer contacto"), notas:o.notas??(l.origen==="Web"?"Dato de directorio web: verificar teléfono.":"")};
+}
+function saveOV(id,field,val){OV[id]=OV[id]||{};OV[id][field]=val;localStorage.setItem(K_CRM,JSON.stringify(OV));schedulePush();renderDashboard();}
+
+/* ---------- NAV ---------- */
+const TITLES={dashboard:["Dashboard","Resumen de tu operación comercial"],crm:["CRM · Leads","Seguimiento de cada funeraria — se guarda solo en tu navegador"],financiero:["Plan financiero","Proyección editable a 6 meses"],arranque:["Arranque","Tu checklist y lo que solo puedes hacer tú"],roi:["Calculadora ROI","Herramienta para la demo con el cliente"],ventas:["Guion de venta","Llamada en frío y manejo de objeciones"],plantillas:["Plantillas de mensajes","WhatsApp y email listos para copiar"],dossier:["Dossier comercial","Folleto de una página para el cliente"],guion:["Guion del asistente IA","Lo que dice la IA al contestar a una familia"],montaje:["Montaje técnico","De cero a una demo funcionando"],plan:["Plan de negocio","La estrategia completa"],contrato:["Contrato","Plantilla de prestación de servicios"]};
+function show(v){
+  $$('.view').forEach(s=>s.classList.remove('active'));
+  $('#v-'+v).classList.add('active');
+  $$('#nav button,.nav button').forEach(b=>b.classList.toggle('active',b.dataset.v===v));
+  const t=TITLES[v]||["",""];$('#vtitle').textContent=t[0];$('#vsub').textContent=t[1];
+  localStorage.setItem(K_SEC,v);window.scrollTo(0,0);
+  if(v==='crm')renderCRM();
+}
+$$('.nav button').forEach(b=>b.addEventListener('click',()=>show(b.dataset.v)));
+
+/* ---------- DASHBOARD ---------- */
+function counts(){const c={};ESTADOS.forEach(e=>c[e]=0);LEADS.forEach(l=>c[leadState(l).estado]++);return c;}
+function renderDashboard(){
+  const c=counts(), total=LEADS.length;
+  const contactados=total-c["Sin contactar"];
+  const clientes=c["Cliente"];
+  const proceso=c["Interesado"]+c["Demo agendada"]+c["Propuesta enviada"];
+  const kpi=[["Leads totales",total,""],["Contactados",contactados,"brand"],["En proceso",proceso,"brand"],["Demos agendadas",c["Demo agendada"],"brand"],["Propuestas",c["Propuesta enviada"],""],["Clientes",clientes,"good"]];
+  $('#kpis').innerHTML=kpi.map(k=>`<div class="kpi"><div class="lbl">${k[0]}</div><div class="num ${k[2]}">${k[1]}</div></div>`).join('');
+  // funnel
+  const steps=[["Sin contactar",c["Sin contactar"]],["Contactado",c["Contactado"]],["Interesado",c["Interesado"]],["Demo agendada",c["Demo agendada"]],["Propuesta enviada",c["Propuesta enviada"]],["Cliente",c["Cliente"]]];
+  const mx=Math.max(...steps.map(s=>s[1]),1);
+  $('#funnel').innerHTML=steps.map(s=>`<div class="funnel-row"><div class="fl">${s[0]}</div><div class="funnel-bar"><span style="width:${Math.max(s[1]/mx*100,2)}%"></span></div><div class="fn">${s[1]}</div></div>`).join('');
+  $('#mrr').textContent=eur(clientes*280);
+  $('#pot').textContent=eur(proceso*280);
+  // next actions
+  const active=LEADS.filter(l=>{const e=leadState(l).estado;return e!=="Cliente"&&e!=="No interesado";})
+    .sort((a,b)=>{const pa=leadState(a).prioridad,pb=leadState(b).prioridad;const rank=p=>p==="Alta"?0:p==="Media"?1:2;return rank(pa)-rank(pb);});
+  $('#pendcount').textContent=active.length;
+  $('#nextactions').innerHTML='<div class="tblwrap" style="max-height:340px"><table><thead><tr><th>Prio</th><th>Empresa</th><th>Estado</th><th>Próxima acción</th></tr></thead><tbody>'+
+    active.slice(0,40).map(l=>{const s=leadState(l);return `<tr><td><span class="tag ${s.prioridad.toLowerCase()}">${s.prioridad}</span></td><td>${l.empresa}<div class="small">${l.tel}</div></td><td class="small">${s.estado}</td><td class="small">${s.proxima||''}</td></tr>`}).join('')+'</tbody></table></div>';
+  // by prov
+  const pv={};LEADS.forEach(l=>{pv[l.prov]=pv[l.prov]||{t:0,cli:0};pv[l.prov].t++;if(leadState(l).estado==="Cliente")pv[l.prov].cli++;});
+  $('#byprov').innerHTML='<table class="provtbl"><thead><tr><th>Provincia</th><th>Leads</th><th>Clientes</th></tr></thead><tbody>'+
+    Object.entries(pv).sort((a,b)=>b[1].t-a[1].t).map(([k,v])=>`<tr><td>${k}</td><td>${v.t}</td><td>${v.cli}</td></tr>`).join('')+'</tbody></table>';
+}
+
+/* ---------- CRM ---------- */
+function fillFilters(){
+  $('#fEstado').innerHTML='<option value="">Todos los estados</option>'+ESTADOS.map(e=>`<option>${e}</option>`).join('');
+  const provs=[...new Set(LEADS.map(l=>l.prov))].sort();
+  $('#fProv').innerHTML='<option value="">Todas las provincias</option>'+provs.map(p=>`<option>${p}</option>`).join('');
+}
+function renderCRM(){
+  const q=($('#q').value||'').toLowerCase(),fe=$('#fEstado').value,fp=$('#fProv').value,ft=$('#fTipo').value,fpr=$('#fPrio').value;
+  const list=LEADS.filter(l=>{const s=leadState(l);
+    if(q&&!(l.empresa+l.ciudad+l.tel).toLowerCase().includes(q))return false;
+    if(fe&&s.estado!==fe)return false; if(fp&&l.prov!==fp)return false;
+    if(ft&&l.tipo!==ft)return false; if(fpr&&s.prioridad!==fpr)return false; return true;});
+  $('#crmcount').textContent=list.length+' de '+LEADS.length;
+  $('#crmbody').innerHTML=list.map(l=>{const s=leadState(l);
+    const estOpts=ESTADOS.map(e=>`<option ${e===s.estado?'selected':''}>${e}</option>`).join('');
+    const prioOpts=["Alta","Media","Baja"].map(p=>`<option ${p===s.prioridad?'selected':''}>${p}</option>`).join('');
+    const rat=l.rating?`⭐ ${l.rating} <span class="small">(${l.resenas||0})</span>`:'<span class="small">—</span>';
+    const webtag=l.origen==="Web"?' <span class="tag web">web</span>':'';
+    const cadtag=l.tipo==="Cadena"?' <span class="tag cad">cadena</span>':'';
+    return `<tr>
+      <td><select onchange="saveOV(${l.id},'prioridad',this.value);renderDashboard()">${prioOpts}</select></td>
+      <td><b>${l.empresa}</b>${webtag}${cadtag}<div class="small">${l.dir}</div></td>
+      <td><a href="tel:${l.tel.replace(/\s/g,'')}">${l.tel}</a></td>
+      <td>${l.ciudad}</td><td class="small">${l.prov}</td>
+      <td class="small">${l.tipo}</td><td>${rat}</td>
+      <td class="est"><select class="st-${s.estado.replace(/\s/g,'').toLowerCase()}" onchange="saveOV(${l.id},'estado',this.value);renderCRM()">${estOpts}</select></td>
+      <td><input value="${(s.proxima||'').replace(/"/g,'&quot;')}" onchange="saveOV(${l.id},'proxima',this.value)"></td>
+      <td><input value="${(s.notas||'').replace(/"/g,'&quot;')}" placeholder="Nota…" onchange="saveOV(${l.id},'notas',this.value)"></td>
+    </tr>`;}).join('');
+}
+function exportCRM(){
+  const head=["Prioridad","Empresa","Telefono","Ciudad","Provincia","Direccion","Rating","Resenas","Tipo","Origen","Estado","Proxima accion","Notas"];
+  const rows=LEADS.map(l=>{const s=leadState(l);return [s.prioridad,l.empresa,l.tel,l.ciudad,l.prov,l.dir,l.rating||'',l.resenas||'',l.tipo,l.origen,s.estado,s.proxima||'',s.notas||''];});
+  const csv=[head,...rows].map(r=>r.map(x=>`"${String(x).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob=new Blob(["﻿"+csv],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='CRM_funerarias.csv';a.click();toast('CSV exportado');
+}
+function resetAll(){if(confirm('¿Borrar tus cambios del CRM, financiero y checklist? Los datos base se mantienen.')){localStorage.removeItem(K_CRM);localStorage.removeItem(K_FIN);localStorage.removeItem(K_CHK);OV={};renderDashboard();renderCRM();initFin();initChecklist();toast('Datos reiniciados');}}
+
+/* ---------- ROI ---------- */
+function calcROI(){
+  const calls=+$('#r_calls').value,lost=+$('#r_lost').value/100,conv=+$('#r_conv').value/100,ticket=+$('#r_ticket').value;
+  const [setup,monthly]=$('#r_plan').value.split(',').map(Number);
+  $('#rv_calls').textContent=calls;$('#rv_lost').textContent=(lost*100).toFixed(0)+' %';$('#rv_conv').textContent=(conv*100).toFixed(0)+' %';$('#rv_ticket').textContent=eur(ticket);
+  const lsy=calls*lost*conv*52, money=lsy*ticket, yc=setup+monthly*12, net=money-yc, be=yc/ticket;
+  $('#o_lostYear').textContent=num(lsy);$('#o_money').textContent=eur(money);$('#o_cost').textContent=eur(yc);$('#o_net').textContent=eur(Math.max(net,0));
+  $('#o_be').textContent=be<1?'menos de 1 servicio al año':Math.ceil(be)+' servicio'+(Math.ceil(be)>1?'s':'')+' al año';
+  const roi=yc>0?net/yc:0;
+  $('#o_head').innerHTML= money<=yc
+    ? `Incluso con supuestos tan bajos, basta recuperar <b>${Math.ceil(be)} servicio(s) al año</b> para que el asistente se pague solo. Todo lo demás es ganancia.`
+    : `Con estos números el asistente se paga <b>${num(1+roi)} veces</b>: cuesta ${eur(yc)}/año y evita perder ~<b>${eur(money)}</b>. Un solo servicio recuperado cubre varios meses de cuota.`;
+}
+['r_calls','r_lost','r_conv','r_ticket'].forEach(id=>$('#'+id).addEventListener('input',calcROI));
+
+/* ---------- FINANCIERO ---------- */
+const FIN_DEF={setup:550,mensual:280,costeCli:25,fijo:80,m1:1,m2:2,m3:3,m4:5,m5:7,m6:9,baja:3};
+const FIN_LBL={setup:"Setup medio (€)",mensual:"Cuota mensual (€)",costeCli:"Coste/cliente (€/mes)",fijo:"Coste fijo (€/mes)",m1:"Nuevos M1",m2:"Nuevos M2",m3:"Nuevos M3",m4:"Nuevos M4",m5:"Nuevos M5",m6:"Nuevos M6",baja:"Baja mensual (%)"};
+function finGet(){try{return Object.assign({},FIN_DEF,JSON.parse(localStorage.getItem(K_FIN))||{})}catch(e){return {...FIN_DEF}}}
+function initFin(){
+  const f=finGet();
+  $('#finInputs').innerHTML=Object.keys(FIN_DEF).map(k=>`<div class="fi"><label>${FIN_LBL[k]}</label><input type="number" id="fin_${k}" value="${f[k]}" oninput="finSave()"></div>`).join('');
+  calcFin();
+}
+function finSave(){const f={};Object.keys(FIN_DEF).forEach(k=>f[k]=+$('#fin_'+k).value);localStorage.setItem(K_FIN,JSON.stringify(f));schedulePush();calcFin();}
+function calcFin(){
+  const f=finGet();const baja=f.baja/100;const nuevos=[f.m1,f.m2,f.m3,f.m4,f.m5,f.m6];
+  let activos=[],ing=[],ben=[];let prev=0;
+  for(let i=0;i<6;i++){const act=(i===0)?nuevos[0]:prev*(1-baja)+nuevos[i];activos.push(act);prev=act;
+    const setupIng=nuevos[i]*f.setup, rec=act*f.mensual, tot=setupIng+rec, cost=act*f.costeCli+f.fijo;
+    ing.push(tot);ben.push(tot-cost);}
+  const mx=Math.max(...ing,1);
+  $('#finChart').innerHTML=ing.map((v,i)=>`<div class="cb"><div class="cvl">${eur(v)}</div><div class="bar" style="height:${v/mx*100}%"></div><div class="cbl">Mes ${i+1}</div></div>`).join('');
+  const rowsdef=[["Clientes nuevos",nuevos,0],["Clientes activos",activos,1],["Ingresos totales (€)",ing,2],["Beneficio neto (€)",ben,2]];
+  let h='<thead><tr><th>Concepto</th>'+[1,2,3,4,5,6].map(m=>`<th>Mes ${m}</th>`).join('')+'</tr></thead><tbody>';
+  rowsdef.forEach(r=>{h+='<tr><td><b>'+r[0]+'</b></td>'+r[1].map(v=>`<td>${r[2]===0?Math.round(v):r[2]===1?num(v):eur(v)}</td>`).join('')+'</tr>';});
+  $('#finTable').innerHTML=h+'</tbody>';
+}
+
+/* ---------- CHECKLIST / ARRANQUE ---------- */
+const CHECK=[
+ ["Montar la demo en el proveedor de voz (Retell/Vapi) con el guion del asistente","semana 1"],
+ ["Elegir voz en español que suene cálida (probar 2-3)","semana 1"],
+ ["Validar contrato + alta autónomo + RGPD con la gestoría/abogado","semana 1"],
+ ["Darte de alta como autónomo (Hacienda 036/037 + RETA)","solo tú"],
+ ["Contratar y pagar proveedor de voz, telefonía y WhatsApp Business","solo tú"],
+ ["Verificar los teléfonos marcados 'web' antes de llamar","solo tú"],
+ ["Rellenar tus datos personales en contrato y plantillas","solo tú"],
+ ["Llamar a los leads de prioridad Alta y agendar demos","semana 2"],
+ ["En cada demo: llamada de prueba en directo + calculadora ROI","semana 2"],
+ ["Cerrar primer cliente con propuesta + contrato","semana 2"],
+];
+function chkGet(){try{return JSON.parse(localStorage.getItem(K_CHK))||{}}catch(e){return {}}}
+function initChecklist(){
+  const done=chkGet();
+  const items=CHECK.map((c,i)=>`<li class="${done[i]?'done':''}"><input type="checkbox" ${done[i]?'checked':''} onchange="chkToggle(${i},this.checked)"><label>${c[0]} <span class="badge">${c[1]}</span></label></li>`).join('');
+  const doneN=Object.values(done).filter(Boolean).length;
+  $('#arranqueBox').innerHTML=`
+    <div class="card"><h3>Tu checklist de arranque · ${doneN}/${CHECK.length}</h3>
+      <div class="funnel-bar" style="margin-bottom:16px"><span style="width:${doneN/CHECK.length*100}%"></span></div>
+      <ul class="check">${items}</ul></div>
+    <div class="card"><h3>Orden recomendado (primeras 2 semanas)</h3>
+      <p><b>Semana 1 — preparar la munición:</b> monta la demo, valida lo legal con la gestoría, y familiarízate con el CRM empezando por los leads de prioridad Alta (verde).</p>
+      <p><b>Semana 2 — vender:</b> sigue el plan por días, llama con el guion de venta y apóyate en las plantillas. En cada demo haz la llamada de prueba en directo y enseña la calculadora ROI. Cierra con propuesta + contrato y actualiza el CRM tras cada llamada.</p></div>
+    <div class="card"><h3>Realidad de los números</h3>
+      <p class="small">El plan proyecta ~12.200 €/mes en el mes 6 con 26 clientes activos. Con 59 funerarias en el CRM tienes embudo para arrancar; para el objetivo del mes 6 tendrás que ampliar a más provincias desde el mes 3. Sé conservador: mejor superar un objetivo bajo que fallar uno alto.</p></div>`;
+}
+function chkToggle(i,v){const d=chkGet();d[i]=v;localStorage.setItem(K_CHK,JSON.stringify(d));schedulePush();initChecklist();}
+
+/* ---------- COPY BUTTONS ---------- */
+function addCopyButtons(scope){
+  $$(scope+' pre').forEach(pre=>{
+    if(pre.querySelector('.copybtn'))return;
+    const b=document.createElement('button');b.className='copybtn';b.textContent='Copiar';
+    b.onclick=()=>{navigator.clipboard.writeText(pre.innerText.replace(/^Copiar/,'').trim());toast('Copiado');};
+    pre.appendChild(b);
+  });
+}
+
+/* ---------- SINCRONIZACIÓN CON SERVIDOR (Vercel + Upstash) ---------- */
+let PW=localStorage.getItem('funerarias_pw')||'';
+let SYNC_OK=false, pushTimer=null;
+function setSync(mode){
+  const b=$('#syncbadge');if(!b)return;
+  const map={ok:['ok','✓ Sincronizado'],saving:['saving','… Guardando'],local:['','● Solo este dispositivo'],err:['err','⚠ Sin conexión'],locked:['err','🔒 Bloqueado']};
+  const m=map[mode]||map.local;b.className='syncbadge '+m[0];b.textContent=m[1];
+}
+async function apiGet(){
+  const r=await fetch('/api/state',{headers:PW?{'x-app-password':PW}:{}});
+  if(r.status===401)return {auth:false};
+  if(!r.ok)throw new Error('http '+r.status);
+  return await r.json();
+}
+async function pullState(){
+  try{
+    let res=await apiGet();
+    if(res&&res.auth===false){
+      const p=prompt('Contraseña de acceso al panel:');
+      if(p){PW=p;localStorage.setItem('funerarias_pw',p);res=await apiGet();}
+    }
+    if(res&&res.auth===false){setSync('locked');return;}
+    if(!res.configured){setSync('local');return;}   // backend sin base de datos aún
+    if(res.state){
+      if(res.state.crm)localStorage.setItem(K_CRM,JSON.stringify(res.state.crm));
+      if(res.state.fin)localStorage.setItem(K_FIN,JSON.stringify(res.state.fin));
+      if(res.state.chk)localStorage.setItem(K_CHK,JSON.stringify(res.state.chk));
+      OV=loadOverrides();SYNC_OK=true;setSync('ok');
+    }else{SYNC_OK=true;await pushNow();}   // BD vacía: sube lo local
+  }catch(e){setSync('local');}
+}
+function schedulePush(){if(!SYNC_OK)return;setSync('saving');clearTimeout(pushTimer);pushTimer=setTimeout(pushNow,800);}
+async function pushNow(){
+  try{
+    const state={crm:loadOverrides(),fin:finGet(),chk:chkGet()};
+    const r=await fetch('/api/state',{method:'POST',headers:Object.assign({'Content-Type':'application/json'},PW?{'x-app-password':PW}:{}),body:JSON.stringify({state})});
+    setSync(r.ok?'ok':'err');
+  }catch(e){setSync('err');}
+}
+
+/* ---------- INIT ---------- */
+(async()=>{
+  fillFilters();
+  await pullState();
+  renderDashboard();renderCRM();initFin();calcROI();initChecklist();
+  addCopyButtons('#plantillasDoc');addCopyButtons('#guionDoc');addCopyButtons('#montajeDoc');
+  const last=localStorage.getItem(K_SEC);if(last&&TITLES[last])show(last);
+})();
+</script>
+</body>
+</html>

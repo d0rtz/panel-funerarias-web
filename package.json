@@ -1,0 +1,7 @@
+{
+  "name": "panel-funerarias-web",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Panel de control comercial para el negocio de asistentes de IA para funerarias",
+  "type": "module"
+}

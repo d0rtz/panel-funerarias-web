@@ -54,6 +54,29 @@ section.view.active{display:block}
 .card h3{margin:0 0 14px;font-size:1rem}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
 @media(max-width:900px){.grid2{grid-template-columns:1fr}.side{width:64px}.brand h1,.brand p,.nav button span.txt,.nav .grouplbl{display:none}.nav button{justify-content:center}}
+/* Mobile sidebar behaviour */
+.hambtn{display:none;background:transparent;border:none;color:var(--muted);font-size:1.25rem;padding:6px;border-radius:8px;cursor:pointer}
+.backdrop{position:fixed;inset:0;background:rgba(0,0,0,.35);opacity:0;pointer-events:none;transition:opacity .18s;z-index:18}
+.backdrop.show{opacity:1;pointer-events:auto}
+.side{transition:transform .25s ease,width .2s}
+@media(max-width:900px){
+  .hambtn{display:inline-flex}
+  .side{position:fixed;left:0;top:0;height:100vh;width:260px;transform:translateX(-110%);z-index:19;padding-top:30px}
+  .side.open{transform:translateX(0)}
+  body.no-scroll{overflow:hidden}
+  .topbar{position:sticky;top:0;z-index:21}
+}
+/* Back button + ROI-only mode */
+.backbtn{display:none;background:transparent;border:none;color:var(--muted);font-size:1.15rem;padding:6px;border-radius:8px;cursor:pointer}
+.roi-only .backbtn{display:inline-flex}
+.roi-only .hambtn{display:none}
+.roi-only .side{display:none}
+.roi-only .top-actions{display:none}
+.roi-only section.view{display:none}
+.roi-only #v-roi{display:block}
+@media(max-width:900px){
+  .roi-only .topbar{padding-left:12px}
+}
 /* FUNNEL */
 .funnel-row{display:flex;align-items:center;gap:12px;margin:9px 0}
 .funnel-row .fl{width:130px;font-size:.82rem;color:var(--muted)}
@@ -149,8 +172,12 @@ ul.check label{cursor:pointer}
 
   <div class="main">
     <div class="topbar">
-      <div><h2 id="vtitle">Dashboard</h2><div class="sub" id="vsub">Resumen de tu operación comercial</div></div>
-      <div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <button class="hambtn" aria-label="Abrir menú">☰</button>
+        <button class="backbtn" aria-label="Volver" title="Volver">←</button>
+        <div><h2 id="vtitle">Dashboard</h2><div class="sub" id="vsub">Resumen de tu operación comercial</div></div>
+      </div>
+      <div class="top-actions">
         <span id="syncbadge" class="syncbadge">● Local</span>
         <button class="btn ghost" onclick="exportCRM()">⬇ Exportar CRM</button>
         <button class="btn ghost" onclick="resetAll()">↺ Reiniciar datos</button>
@@ -1357,4 +1384,40 @@ async function pushNow(){
 })();
 </script>
 </body>
+<script>
+// Mobile sidebar toggle
+(()=>{
+  const side = document.querySelector('.side');
+  const hamb = document.querySelector('.hambtn');
+  const back = document.querySelector('.backbtn');
+  const navBtns = document.querySelectorAll('.nav button');
+  const roiBtn = document.querySelector('.nav button[data-v="roi"]');
+  const dashboardBtn = document.querySelector('.nav button[data-v="dashboard"]');
+  const backdrop = document.createElement('div');
+  backdrop.className = 'backdrop';
+  document.body.appendChild(backdrop);
+  function open(){side.classList.add('open');document.body.classList.add('no-scroll');backdrop.classList.add('show')}
+  function close(){side.classList.remove('open');document.body.classList.remove('no-scroll');backdrop.classList.remove('show')}
+  hamb && hamb.addEventListener('click', ()=> side.classList.contains('open') ? close() : open());
+  backdrop.addEventListener('click', close);
+  // ROI fullscreen behaviour: when ROI is selected, show only calculator
+  roiBtn && roiBtn.addEventListener('click', ()=>{
+    // allow existing view-switch handlers to run first
+    setTimeout(()=>{
+      document.body.classList.add('roi-only');
+      // ensure ROI view visible
+      const v = document.getElementById('v-roi'); if(v) v.classList.add('active');
+    },120);
+  });
+  // clicking any other nav removes roi-only
+  navBtns.forEach(b=>{
+    b.addEventListener('click', ()=>{ if(b.dataset.v !== 'roi') document.body.classList.remove('roi-only'); if(window.innerWidth<=900) close(); });
+  });
+  // back button returns to dashboard and exits roi-only
+  back && back.addEventListener('click', ()=>{
+    document.body.classList.remove('roi-only');
+    if(dashboardBtn) dashboardBtn.click();
+  });
+})();
+</script>
 </html>

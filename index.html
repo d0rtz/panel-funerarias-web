@@ -2,145 +2,249 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#101c29">
 <title>Panel · Funerarias IA</title>
 <style>
 :root{
-  --bg:#eef2f6; --panel:#ffffff; --side:#12202e; --side2:#1b3145; --sidetxt:#aebfce;
-  --ink:#1f2c39; --muted:#66788a; --line:#e3e9ef; --brand:#1f6feb; --brand2:#3ea6ff;
-  --good:#12a66b; --goodbg:#e5f6ee; --warn:#c98a00; --warnbg:#fdf3dd; --bad:#d64545; --badbg:#fbe6e6;
-  --alta:#e5f6ee; --altatx:#12a66b; --baja:#fbe6e6; --bajatx:#d64545;
-  --radius:12px; --sh:0 1px 3px rgba(20,40,60,.08),0 1px 2px rgba(20,40,60,.04);
+  --bg:#f2f5f9; --panel:#ffffff; --side:#101c29; --side2:#1c3044; --sidetxt:#a7b9c9;
+  --ink:#1a2836; --muted:#5f7285; --line:#e2e8f0; --line2:#edf1f6;
+  --brand:#2563eb; --brand2:#4f8ff7; --brandbg:#e8f0fe;
+  --good:#0f9d61; --goodbg:#e2f6ec; --warn:#b45309; --warnbg:#fdf0dc;
+  --bad:#d64545; --badbg:#fbe7e7;
+  --radius:14px; --sh:0 1px 2px rgba(15,30,45,.05),0 4px 14px -6px rgba(15,30,45,.08);
 }
 *{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
 body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
   background:var(--bg);color:var(--ink);font-size:14px;line-height:1.55}
 a{color:var(--brand)}
+button{font-family:inherit}
 .layout{display:flex;min-height:100vh}
-/* SIDEBAR */
-.side{width:236px;background:var(--side);color:var(--sidetxt);flex-shrink:0;position:sticky;top:0;height:100vh;
-  overflow-y:auto;padding:18px 0}
-.brand{padding:0 20px 16px;border-bottom:1px solid var(--side2);margin-bottom:10px}
-.brand h1{color:#fff;font-size:1.05rem;margin:0}
-.brand p{margin:2px 0 0;font-size:.72rem;color:#7f95a8;letter-spacing:.04em;text-transform:uppercase}
-.nav{list-style:none;padding:0;margin:0}
-.nav li{margin:1px 10px}
-.nav button{width:100%;text-align:left;background:none;border:none;color:var(--sidetxt);
-  padding:9px 12px;border-radius:8px;cursor:pointer;font-size:.88rem;display:flex;align-items:center;gap:10px;transition:.12s}
-.nav button:hover{background:var(--side2);color:#fff}
-.nav button.active{background:var(--brand);color:#fff;font-weight:600}
-.nav .ico{width:18px;text-align:center;font-size:1rem}
-.nav .grouplbl{font-size:.66rem;text-transform:uppercase;letter-spacing:.08em;color:#5f7488;padding:14px 22px 5px}
-/* MAIN */
+/* ---------- SIDEBAR ---------- */
+.side{width:240px;background:var(--side);color:var(--sidetxt);flex-shrink:0;position:sticky;top:0;height:100vh;
+  overflow-y:auto;padding:18px 0;transition:transform .25s ease}
+.side .brand{padding:0 20px 16px;border-bottom:1px solid var(--side2);margin-bottom:10px}
+.side .brand h1{color:#fff;font-size:1.05rem;margin:0}
+.side .brand p{margin:2px 0 0;font-size:.72rem;color:#7f95a8;letter-spacing:.04em;text-transform:uppercase}
+ul.nav{list-style:none;padding:0;margin:0}
+ul.nav li{margin:1px 10px}
+.side .nav button{width:100%;text-align:left;background:none;border:none;color:var(--sidetxt);
+  padding:10px 12px;border-radius:9px;cursor:pointer;font-size:.9rem;display:flex;align-items:center;gap:11px;transition:background .12s,color .12s}
+.side .nav button:hover{background:var(--side2);color:#fff}
+.side .nav button.active{background:var(--brand);color:#fff;font-weight:600}
+.side .ico{width:20px;text-align:center;font-size:1.05rem}
+.grouplbl{font-size:.66rem;text-transform:uppercase;letter-spacing:.09em;color:#5f7488;padding:16px 22px 6px}
+/* ---------- MAIN / TOPBAR ---------- */
 .main{flex:1;min-width:0}
-.topbar{background:var(--panel);border-bottom:1px solid var(--line);padding:14px 26px;display:flex;
-  align-items:center;justify-content:space-between;position:sticky;top:0;z-index:20}
-.topbar h2{margin:0;font-size:1.15rem}
-.topbar .sub{font-size:.78rem;color:var(--muted)}
-.btn{background:var(--brand);color:#fff;border:none;padding:8px 14px;border-radius:8px;cursor:pointer;font-size:.82rem;font-weight:600}
+.topbar{background:var(--panel);border-bottom:1px solid var(--line);padding:12px 26px;display:flex;
+  align-items:center;justify-content:space-between;gap:10px;position:sticky;top:0;z-index:20}
+.topbar h2{margin:0;font-size:1.12rem;line-height:1.25}
+.topbar .sub{font-size:.76rem;color:var(--muted)}
+.top-actions{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.btn{background:var(--brand);color:#fff;border:none;padding:8px 14px;border-radius:9px;cursor:pointer;font-size:.82rem;font-weight:600}
 .btn.ghost{background:#fff;color:var(--muted);border:1px solid var(--line)}
-.btn.ghost:hover{color:var(--ink)}
+.btn.ghost:hover{color:var(--ink);border-color:#c7d3e0}
 .content{padding:24px 26px 60px;max-width:1180px}
-section.view{display:none;animation:fade .2s}
+section.view{display:none;animation:fade .18s}
 section.view.active{display:block}
 @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1}}
-/* CARDS */
-.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-bottom:22px}
-.kpi{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--sh)}
-.kpi .lbl{font-size:.74rem;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
-.kpi .num{font-size:1.9rem;font-weight:700;margin-top:4px;line-height:1}
+/* ---------- KPIs / CARDS ---------- */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:20px}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;box-shadow:var(--sh);min-width:0}
+.kpi .lbl{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kpi .num{font-size:1.8rem;font-weight:750;margin-top:4px;line-height:1;font-variant-numeric:tabular-nums}
 .kpi .num.good{color:var(--good)} .kpi .num.brand{color:var(--brand)}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--sh);margin-bottom:20px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--sh);margin-bottom:18px}
 .card h3{margin:0 0 14px;font-size:1rem}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
-@media(max-width:900px){.grid2{grid-template-columns:1fr}.side{width:64px}.brand h1,.brand p,.nav button span.txt,.nav .grouplbl{display:none}.nav button{justify-content:center}}
-/* Mobile sidebar behaviour */
-.hambtn{display:none;background:transparent;border:none;color:var(--muted);font-size:1.25rem;padding:6px;border-radius:8px;cursor:pointer}
-.backdrop{position:fixed;inset:0;background:rgba(0,0,0,.35);opacity:0;pointer-events:none;transition:opacity .18s;z-index:18}
-.backdrop.show{opacity:1;pointer-events:auto}
-.side{transition:transform .25s ease,width .2s}
-@media(max-width:900px){
-  .hambtn{display:inline-flex}
-  .side{position:fixed;left:0;top:0;height:100vh;width:260px;transform:translateX(-110%);z-index:19;padding-top:30px}
-  .side.open{transform:translateX(0)}
-  body.no-scroll{overflow:hidden}
-  .topbar{position:sticky;top:0;z-index:21}
-}
-/* Back button + ROI-only mode */
-.backbtn{display:none;background:transparent;border:none;color:var(--muted);font-size:1.15rem;padding:6px;border-radius:8px;cursor:pointer}
-.roi-only .backbtn{display:inline-flex}
-.roi-only .hambtn{display:none}
-.roi-only .side{display:none}
-.roi-only .top-actions{display:none}
-.roi-only section.view{display:none}
-.roi-only #v-roi{display:block}
-@media(max-width:900px){
-  .roi-only .topbar{padding-left:12px}
-}
-/* FUNNEL */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+/* ---------- FUNNEL ---------- */
 .funnel-row{display:flex;align-items:center;gap:12px;margin:9px 0}
-.funnel-row .fl{width:130px;font-size:.82rem;color:var(--muted)}
-.funnel-bar{flex:1;background:#f0f4f8;border-radius:6px;height:26px;overflow:hidden}
+.funnel-row .fl{width:130px;font-size:.8rem;color:var(--muted)}
+.funnel-bar{flex:1;background:#eef2f7;border-radius:6px;height:24px;overflow:hidden}
 .funnel-bar span{display:block;height:100%;background:linear-gradient(90deg,var(--brand),var(--brand2));border-radius:6px;transition:width .4s}
-.funnel-row .fn{width:34px;text-align:right;font-weight:700}
-/* TABLE */
-.toolbar{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px;align-items:center}
-.toolbar input,.toolbar select{padding:8px 10px;border:1px solid var(--line);border-radius:8px;font-size:.82rem;background:#fff}
-.toolbar input[type=search]{min-width:210px}
+.funnel-row .fn{width:34px;text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+/* ---------- ESTADOS (colores compartidos: selects del CRM y chips) ---------- */
+.st-sincontactar{color:#64748b}
+.st-contactado{color:#1d4ed8}
+.st-interesado{color:#0e7490}
+.st-demoagendada{color:#6d28d9}
+.st-propuestaenviada{color:#b45309}
+.st-cliente{color:#0f9d61;font-weight:700}
+.st-nointeresado{color:#93a1af}
+.st-recontactar{color:#c2410c}
+.stchip{display:inline-block;padding:2px 9px;border-radius:999px;font-size:.68rem;font-weight:650;white-space:nowrap}
+.stchip.st-sincontactar{background:#eef2f6}
+.stchip.st-contactado{background:#e3edfd}
+.stchip.st-interesado{background:#dff4f9}
+.stchip.st-demoagendada{background:#ece5fb}
+.stchip.st-propuestaenviada{background:#fdf0dc}
+.stchip.st-cliente{background:#e2f6ec}
+.stchip.st-nointeresado{background:#f2f4f6}
+.stchip.st-recontactar{background:#fde8df}
+/* ---------- PRÓXIMAS ACCIONES (dashboard) ---------- */
+.nx{max-height:380px;overflow-y:auto;margin:0 -6px}
+.nxrow{display:flex;align-items:center;gap:10px;padding:9px 6px;border-bottom:1px solid var(--line2);cursor:pointer;border-radius:8px}
+.nxrow:last-child{border-bottom:none}
+.nxrow:hover{background:#f6fafe}
+.dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.dot.alta{background:var(--good)} .dot.media{background:#e0a80c} .dot.baja{background:#c3ccd6}
+.nxmain{flex:1;min-width:0}
+.nxtop{display:flex;flex-wrap:wrap;gap:2px 8px;align-items:center}
+.nxtop b{font-size:.84rem}
+.nxmain .small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.callbtn{text-decoration:none;font-size:.95rem;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:#fff;line-height:1;flex-shrink:0}
+.callbtn:hover{border-color:var(--brand);background:var(--brandbg)}
+/* ---------- TOOLBAR / TABLAS ---------- */
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;align-items:center}
+.toolbar input,.toolbar select{padding:8px 10px;border:1px solid var(--line);border-radius:9px;font-size:.82rem;background:#fff;color:var(--ink)}
+.toolbar input[type=search]{min-width:210px;flex:1;max-width:340px}
 table{width:100%;border-collapse:collapse;font-size:.82rem}
-th,td{padding:8px 9px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}
-th{background:#f6f9fc;font-size:.72rem;text-transform:uppercase;letter-spacing:.03em;color:var(--muted);position:sticky;top:57px;z-index:5}
+th,td{padding:8px 9px;border-bottom:1px solid var(--line2);text-align:left;vertical-align:middle}
+th{background:#f6f9fc;font-size:.7rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
 tbody tr:hover{background:#f8fbfe}
-.tag{display:inline-block;padding:2px 8px;border-radius:999px;font-size:.7rem;font-weight:600}
-.tag.alta{background:var(--alta);color:var(--altatx)} .tag.baja{background:var(--baja);color:var(--bajatx)}
-.tag.web{background:var(--warnbg);color:var(--warn)} .tag.cad{background:#eef;color:#4a4ad0}
-td select,td input{font-size:.8rem;padding:5px 6px;border:1px solid var(--line);border-radius:6px;width:100%;background:#fff;font-family:inherit}
+.tblwrap{overflow:auto;max-height:70vh;border:1px solid var(--line2);border-radius:10px}
+.tblwrap th{position:sticky;top:0;z-index:5}
+tr.empty td{text-align:center;color:var(--muted);padding:22px 10px}
+.tag{display:inline-block;padding:2px 8px;border-radius:999px;font-size:.68rem;font-weight:600;vertical-align:1px}
+.tag.alta{background:var(--goodbg);color:var(--good)}
+.tag.media{background:#fdf0dc;color:#b45309}
+.tag.baja{background:var(--badbg);color:var(--bad)}
+.tag.web{background:var(--warnbg);color:var(--warn)}
+.tag.cad{background:#e9e9fb;color:#4a4ad0}
+td select,td input{font-size:.8rem;padding:6px 7px;border:1px solid var(--line);border-radius:7px;width:100%;background:#fff;font-family:inherit;color:var(--ink)}
 td.est select{font-weight:600}
-.st-sincontactar{color:var(--muted)} .st-cliente{color:var(--good);font-weight:700}
-.tblwrap{overflow-x:auto;max-height:70vh;overflow-y:auto}
+td.c-est{min-width:150px} td.c-prox,td.c-notas{min-width:120px}
 .small{font-size:.78rem;color:var(--muted)}
-/* DOC content */
+/* ---------- DOCUMENTOS ---------- */
 .doc{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:28px 32px;box-shadow:var(--sh);max-width:860px}
-.doc h1{font-size:1.5rem;margin-top:0} .doc h2{font-size:1.15rem;margin-top:26px;padding-bottom:6px;border-bottom:1px solid var(--line)}
-.doc h3{font-size:1rem;margin-top:20px} .doc table{margin:12px 0} .doc th{position:static}
-.doc pre{background:#0f1e2b;color:#e6eef5;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:.82rem;position:relative}
+.doc h1{font-size:1.45rem;margin-top:0} .doc h2{font-size:1.15rem;margin-top:26px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+.doc h3{font-size:1rem;margin-top:20px} .doc table{margin:12px 0}
+.doc pre{background:#0f1e2b;color:#e6eef5;padding:14px 16px;border-radius:10px;overflow-x:auto;font-size:.82rem;position:relative}
 .doc code{font-family:ui-monospace,Menlo,Consolas,monospace}
 .doc blockquote{border-left:3px solid var(--brand);margin:14px 0;padding:6px 16px;background:#f2f7fd;color:#39516b;border-radius:0 8px 8px 0}
 .copybtn{position:absolute;top:8px;right:8px;background:rgba(255,255,255,.14);color:#fff;border:none;
-  padding:3px 9px;border-radius:6px;font-size:.7rem;cursor:pointer}
+  padding:4px 10px;border-radius:6px;font-size:.7rem;cursor:pointer}
 .copybtn:hover{background:rgba(255,255,255,.28)}
-/* ROI + FIN */
+/* ---------- ROI / FINANCIERO ---------- */
 .roiwrap{display:grid;grid-template-columns:1fr 1fr;gap:20px}
-@media(max-width:820px){.roiwrap{grid-template-columns:1fr}}
-label.fld{display:block;font-size:.82rem;margin:12px 0 5px;color:#42566a}
+label.fld{display:block;font-size:.82rem;margin:14px 0 4px;color:#42566a}
 .rowr{display:flex;align-items:center;gap:10px}
-input[type=range]{flex:1;accent-color:var(--brand)}
-.rv{min-width:76px;text-align:right;font-weight:700;font-variant-numeric:tabular-nums;background:#f4f8fc;border:1px solid var(--line);border-radius:6px;padding:4px 8px}
-.big{font-size:2rem;font-weight:800;line-height:1.1}
-.big.bad{color:var(--bad)} .big.good{color:var(--good)}
-.mrow{padding:11px 0;border-bottom:1px solid var(--line)} .mrow:last-child{border:none}
+input[type=range]{flex:1;accent-color:var(--brand);height:30px;margin:0}
+.rv{min-width:78px;text-align:right;font-weight:700;font-variant-numeric:tabular-nums;background:#f4f8fc;border:1px solid var(--line);border-radius:7px;padding:5px 8px}
+.big{font-size:1.9rem;font-weight:800;line-height:1.1;font-variant-numeric:tabular-nums}
+.big.bad{color:var(--bad)} .big.good{color:var(--good)} .big.brand{color:var(--brand)}
+.mrow{padding:11px 0;border-bottom:1px solid var(--line2)} .mrow:last-child{border:none}
 .mrow .k{font-size:.8rem;color:var(--muted)}
 .pill{display:inline-block;background:var(--goodbg);color:var(--good);border:1px solid #b8e6ce;border-radius:999px;padding:5px 12px;font-weight:700;font-size:.85rem}
 .headline{background:#f2f7fd;border:1px solid #d6e6f8;border-radius:10px;padding:14px 16px;margin-top:16px}
 .headline b{color:var(--good)}
 .fin-inputs{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
 .fin-inputs .fi label{font-size:.72rem;color:var(--muted);display:block;margin-bottom:3px}
-.fin-inputs .fi input{width:100%;padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:#fffdf0}
+.fin-inputs .fi input{width:100%;padding:7px 9px;border:1px solid var(--line);border-radius:7px;background:#fffdf0;font-family:inherit}
 .chartbars{display:flex;align-items:flex-end;gap:10px;height:150px;margin:16px 0 4px;padding-top:10px}
-.chartbars .cb{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:5px}
+.chartbars .cb{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:5px;min-width:0}
 .chartbars .cb .bar{width:70%;background:linear-gradient(180deg,var(--brand2),var(--brand));border-radius:5px 5px 0 0;min-height:2px}
-.chartbars .cb .cbl{font-size:.68rem;color:var(--muted)} .chartbars .cb .cvl{font-size:.68rem;font-weight:700}
+.chartbars .cb .cbl{font-size:.68rem;color:var(--muted)} .chartbars .cb .cvl{font-size:.66rem;font-weight:700;white-space:nowrap}
+/* ---------- CHECKLIST ---------- */
 ul.check{list-style:none;padding:0;margin:0}
-ul.check li{display:flex;gap:11px;align-items:flex-start;padding:11px 0;border-bottom:1px solid var(--line)}
+ul.check li{display:flex;gap:11px;align-items:flex-start;padding:11px 0;border-bottom:1px solid var(--line2)}
 ul.check li:last-child{border:none}
-ul.check input{margin-top:3px;width:17px;height:17px;accent-color:var(--good);flex-shrink:0;cursor:pointer}
+ul.check input{margin-top:3px;width:18px;height:18px;accent-color:var(--good);flex-shrink:0;cursor:pointer}
 ul.check li.done label{text-decoration:line-through;color:var(--muted)}
 ul.check label{cursor:pointer}
 .badge{display:inline-block;background:var(--brand);color:#fff;border-radius:999px;padding:1px 8px;font-size:.72rem;font-weight:700;margin-left:6px}
 .hint{font-size:.78rem;color:var(--muted);margin:4px 0 16px}
 .provtbl td,.provtbl th{padding:5px 8px}
-.syncbadge{display:inline-block;font-size:.74rem;font-weight:600;padding:5px 11px;border-radius:999px;margin-right:8px;border:1px solid var(--line);background:#fff;color:var(--muted)}.syncbadge.ok{background:var(--goodbg);color:var(--good);border-color:#b8e6ce}.syncbadge.saving{background:var(--warnbg);color:var(--warn);border-color:#f0dca6}.syncbadge.err{background:var(--badbg);color:var(--bad);border-color:#f0c2c2}.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:8px;font-size:.82rem;opacity:0;transition:.25s;pointer-events:none;z-index:99}
+/* ---------- SYNC / TOAST ---------- */
+.syncbadge{display:inline-block;font-size:.74rem;font-weight:600;padding:5px 11px;border-radius:999px;border:1px solid var(--line);background:#fff;color:var(--muted);white-space:nowrap}
+.syncbadge.ok{background:var(--goodbg);color:var(--good);border-color:#b8e6ce}
+.syncbadge.saving{background:var(--warnbg);color:var(--warn);border-color:#f0dca6}
+.syncbadge.err{background:var(--badbg);color:var(--bad);border-color:#f0c2c2}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:9px;font-size:.82rem;opacity:0;transition:.25s;pointer-events:none;z-index:99}
 .toast.show{opacity:1}
+/* ---------- BOTONES MÓVIL / DRAWER / BNAV ---------- */
+.hambtn{display:none;background:transparent;border:none;color:var(--ink);font-size:1.3rem;padding:6px 8px;border-radius:8px;cursor:pointer}
+.backbtn{display:none;background:transparent;border:none;color:var(--ink);font-size:1.2rem;padding:6px 8px;border-radius:8px;cursor:pointer}
+.backdrop{position:fixed;inset:0;background:rgba(10,20,30,.45);opacity:0;pointer-events:none;transition:opacity .18s;z-index:28}
+.backdrop.show{opacity:1;pointer-events:auto}
+.bnav{display:none}
+/* ---------- MODO ROI (demo a pantalla completa) ---------- */
+.roi-only .backbtn{display:inline-flex}
+.roi-only .hambtn,.roi-only .side,.roi-only .top-actions,.roi-only .bnav{display:none}
+.roi-only section.view{display:none}
+.roi-only #v-roi{display:block}
+/* ---------- MÓVIL ---------- */
+@media(max-width:900px){
+  body{font-size:15px}
+  .hambtn{display:inline-flex}
+  .side{position:fixed;left:0;top:0;height:100dvh;width:min(300px,84vw);transform:translateX(-105%);z-index:30;padding-top:24px;box-shadow:0 0 40px rgba(0,0,0,.3)}
+  .side.open{transform:translateX(0)}
+  body.no-scroll{overflow:hidden}
+  .topbar{padding:10px 12px}
+  .topbar h2{font-size:1rem}
+  .topbar .sub{font-size:.7rem;max-width:55vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .btxt{display:none}
+  .btn.ghost{padding:8px 10px}
+  .syncbadge{padding:5px 9px}
+  .content{padding:16px 13px calc(86px + env(safe-area-inset-bottom))}
+  .grid2{grid-template-columns:1fr;gap:14px}
+  .card{padding:15px 14px;border-radius:12px}
+  .kpis{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+  .kpi{padding:10px 11px;border-radius:12px}
+  .kpi .lbl{font-size:.58rem}
+  .kpi .num{font-size:1.35rem}
+  .funnel-row .fl{width:104px;font-size:.72rem}
+  .big{font-size:1.55rem}
+  /* Controles a 16px para que iOS no haga zoom al enfocar */
+  td select,td input,.toolbar input,.toolbar select,.fin-inputs .fi input,#r_plan{font-size:16px}
+  /* Filtros del CRM en rejilla */
+  .toolbar{display:grid;grid-template-columns:1fr 1fr}
+  .toolbar input[type=search]{grid-column:1/-1;max-width:none;width:100%}
+  #crmcount{grid-column:1/-1}
+  /* CRM: la tabla se convierte en tarjetas */
+  #v-crm > .card{background:none;border:none;box-shadow:none;padding:0}
+  #v-crm .tblwrap{max-height:none;overflow:visible;border:none;border-radius:0}
+  #crmtable thead{display:none}
+  #crmtable,#crmtable tbody{display:block;width:100%}
+  #crmtable tr{display:flex;flex-wrap:wrap;gap:7px 10px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 12px 14px;margin-bottom:10px;box-shadow:var(--sh)}
+  #crmtable tbody tr:hover{background:var(--panel)}
+  #crmtable td{display:block;border:none;padding:0;width:auto}
+  #crmtable td.c-emp{width:100%;order:1;font-size:.95rem;line-height:1.4}
+  #crmtable td.c-city,#crmtable td.c-prov,#crmtable td.c-tipo{order:2;font-size:.74rem;color:var(--muted)}
+  #crmtable td.c-city::after,#crmtable td.c-prov::after{content:" ·"}
+  #crmtable td.c-rat{order:3;margin-left:auto;font-size:.78rem}
+  #crmtable td.c-tel{order:4;width:100%}
+  #crmtable td.c-tel a{display:flex;align-items:center;justify-content:center;gap:8px;background:var(--brandbg);color:var(--brand);text-decoration:none;font-weight:650;padding:10px;border-radius:10px}
+  #crmtable td.c-tel a::before{content:"📞"}
+  #crmtable td.c-prio{order:5;flex:1 1 30%}
+  #crmtable td.c-est{order:6;flex:1 1 58%}
+  #crmtable td.c-prox{order:7;width:100%}
+  #crmtable td.c-notas{order:8;width:100%}
+  #crmtable td[data-l]::before{content:attr(data-l);display:block;font-size:.62rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin:2px 0 3px}
+  #crmtable tr.empty{display:block}
+  /* Documentos y ROI */
+  .doc{padding:20px 16px}
+  .doc table{display:block;overflow-x:auto}
+  .doc pre{font-size:.78rem}
+  .roiwrap{grid-template-columns:1fr}
+  .chartbars{gap:6px}
+  .chartbars .cb .cvl{font-size:.56rem}
+  /* Toast por encima de la navegación inferior */
+  .toast{bottom:calc(92px + env(safe-area-inset-bottom))}
+  /* Navegación inferior */
+  .bnav{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:25;background:rgba(255,255,255,.96);
+    -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border-top:1px solid var(--line);
+    padding:6px 8px calc(6px + env(safe-area-inset-bottom))}
+  .bnav button{flex:1;background:none;border:none;display:flex;flex-direction:column;align-items:center;gap:2px;
+    padding:6px 0 4px;border-radius:10px;cursor:pointer;color:var(--muted);font-size:.6rem;font-weight:600}
+  .bnav button .ico{font-size:1.3rem;line-height:1.15}
+  .bnav button.active{color:var(--brand);background:var(--brandbg)}
+}
+@media(max-width:380px){
+  .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .funnel-row .fl{width:92px}
+}
 </style>
 </head>
 <body>
@@ -179,8 +283,8 @@ ul.check label{cursor:pointer}
       </div>
       <div class="top-actions">
         <span id="syncbadge" class="syncbadge">● Local</span>
-        <button class="btn ghost" onclick="exportCRM()">⬇ Exportar CRM</button>
-        <button class="btn ghost" onclick="resetAll()">↺ Reiniciar datos</button>
+        <button class="btn ghost" onclick="exportCRM()">⬇<span class="btxt"> Exportar CRM</span></button>
+        <button class="btn ghost" onclick="resetAll()">↺<span class="btxt"> Reiniciar datos</span></button>
       </div>
     </div>
     <div class="content">
@@ -1157,6 +1261,13 @@ Detalle: [lista con hora, nombre, teléfono, motivo]
     </div>
   </div>
 </div>
+<nav class="nav bnav" aria-label="Navegación inferior">
+  <button data-v="dashboard"><span class="ico">📊</span><span class="blbl">Inicio</span></button>
+  <button data-v="crm"><span class="ico">👥</span><span class="blbl">CRM</span></button>
+  <button data-v="roi"><span class="ico">🧮</span><span class="blbl">ROI</span></button>
+  <button data-v="financiero"><span class="ico">💰</span><span class="blbl">Plan</span></button>
+  <button class="bmore" type="button"><span class="ico">☰</span><span class="blbl">Más</span></button>
+</nav>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -1166,6 +1277,7 @@ const K_CRM="funerarias_crm_v1", K_FIN="funerarias_fin_v1", K_CHK="funerarias_ch
 const $=s=>document.querySelector(s), $$=s=>document.querySelectorAll(s);
 const eur=n=>Math.round(n).toLocaleString('es-ES')+' €';
 const num=n=>n.toLocaleString('es-ES',{maximumFractionDigits:1});
+const slug=e=>e.replace(/\s/g,'').toLowerCase();
 function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),1800);}
 
 /* ---------- STATE ---------- */
@@ -1180,6 +1292,7 @@ function saveOV(id,field,val){OV[id]=OV[id]||{};OV[id][field]=val;localStorage.s
 /* ---------- NAV ---------- */
 const TITLES={dashboard:["Dashboard","Resumen de tu operación comercial"],crm:["CRM · Leads","Seguimiento de cada funeraria — se guarda solo en tu navegador"],financiero:["Plan financiero","Proyección editable a 6 meses"],arranque:["Arranque","Tu checklist y lo que solo puedes hacer tú"],roi:["Calculadora ROI","Herramienta para la demo con el cliente"],ventas:["Guion de venta","Llamada en frío y manejo de objeciones"],plantillas:["Plantillas de mensajes","WhatsApp y email listos para copiar"],dossier:["Dossier comercial","Folleto de una página para el cliente"],guion:["Guion del asistente IA","Lo que dice la IA al contestar a una familia"],montaje:["Montaje técnico","De cero a una demo funcionando"],plan:["Plan de negocio","La estrategia completa"],contrato:["Contrato","Plantilla de prestación de servicios"]};
 function show(v){
+  if(!v||!$('#v-'+v))return;
   $$('.view').forEach(s=>s.classList.remove('active'));
   $('#v-'+v).classList.add('active');
   $$('#nav button,.nav button').forEach(b=>b.classList.toggle('active',b.dataset.v===v));
@@ -1208,13 +1321,19 @@ function renderDashboard(){
   const active=LEADS.filter(l=>{const e=leadState(l).estado;return e!=="Cliente"&&e!=="No interesado";})
     .sort((a,b)=>{const pa=leadState(a).prioridad,pb=leadState(b).prioridad;const rank=p=>p==="Alta"?0:p==="Media"?1:2;return rank(pa)-rank(pb);});
   $('#pendcount').textContent=active.length;
-  $('#nextactions').innerHTML='<div class="tblwrap" style="max-height:340px"><table><thead><tr><th>Prio</th><th>Empresa</th><th>Estado</th><th>Próxima acción</th></tr></thead><tbody>'+
-    active.slice(0,40).map(l=>{const s=leadState(l);return `<tr><td><span class="tag ${s.prioridad.toLowerCase()}">${s.prioridad}</span></td><td>${l.empresa}<div class="small">${l.tel}</div></td><td class="small">${s.estado}</td><td class="small">${s.proxima||''}</td></tr>`}).join('')+'</tbody></table></div>';
+  $('#nextactions').innerHTML='<div class="nx">'+
+    active.slice(0,30).map(l=>{const s=leadState(l);return `<div class="nxrow" onclick="goLead(${l.id})" title="Abrir en el CRM">
+      <span class="dot ${s.prioridad.toLowerCase()}"></span>
+      <div class="nxmain"><div class="nxtop"><b>${l.empresa}</b><span class="stchip st-${slug(s.estado)}">${s.estado}</span></div><div class="small">${s.proxima||'—'} · ${l.ciudad}</div></div>
+      <a class="callbtn" href="tel:${l.tel.replace(/\s/g,'')}" onclick="event.stopPropagation()" aria-label="Llamar">📞</a>
+    </div>`}).join('')+'</div>';
   // by prov
   const pv={};LEADS.forEach(l=>{pv[l.prov]=pv[l.prov]||{t:0,cli:0};pv[l.prov].t++;if(leadState(l).estado==="Cliente")pv[l.prov].cli++;});
   $('#byprov').innerHTML='<table class="provtbl"><thead><tr><th>Provincia</th><th>Leads</th><th>Clientes</th></tr></thead><tbody>'+
     Object.entries(pv).sort((a,b)=>b[1].t-a[1].t).map(([k,v])=>`<tr><td>${k}</td><td>${v.t}</td><td>${v.cli}</td></tr>`).join('')+'</tbody></table>';
 }
+
+function goLead(id){const l=LEADS.find(x=>x.id===id);if(!l)return;show('crm');$('#q').value=l.empresa;renderCRM();}
 
 /* ---------- CRM ---------- */
 function fillFilters(){
@@ -1236,15 +1355,15 @@ function renderCRM(){
     const webtag=l.origen==="Web"?' <span class="tag web">web</span>':'';
     const cadtag=l.tipo==="Cadena"?' <span class="tag cad">cadena</span>':'';
     return `<tr>
-      <td><select onchange="saveOV(${l.id},'prioridad',this.value);renderDashboard()">${prioOpts}</select></td>
-      <td><b>${l.empresa}</b>${webtag}${cadtag}<div class="small">${l.dir}</div></td>
-      <td><a href="tel:${l.tel.replace(/\s/g,'')}">${l.tel}</a></td>
-      <td>${l.ciudad}</td><td class="small">${l.prov}</td>
-      <td class="small">${l.tipo}</td><td>${rat}</td>
-      <td class="est"><select class="st-${s.estado.replace(/\s/g,'').toLowerCase()}" onchange="saveOV(${l.id},'estado',this.value);renderCRM()">${estOpts}</select></td>
-      <td><input value="${(s.proxima||'').replace(/"/g,'&quot;')}" onchange="saveOV(${l.id},'proxima',this.value)"></td>
-      <td><input value="${(s.notas||'').replace(/"/g,'&quot;')}" placeholder="Nota…" onchange="saveOV(${l.id},'notas',this.value)"></td>
-    </tr>`;}).join('');
+      <td class="c-prio" data-l="Prioridad"><select onchange="saveOV(${l.id},'prioridad',this.value);renderDashboard()">${prioOpts}</select></td>
+      <td class="c-emp"><b>${l.empresa}</b>${webtag}${cadtag}<div class="small">${l.dir}</div></td>
+      <td class="c-tel"><a href="tel:${l.tel.replace(/\s/g,'')}">${l.tel}</a></td>
+      <td class="c-city">${l.ciudad}</td><td class="small c-prov">${l.prov}</td>
+      <td class="small c-tipo">${l.tipo}</td><td class="c-rat">${rat}</td>
+      <td class="est c-est" data-l="Estado"><select class="st-${slug(s.estado)}" onchange="saveOV(${l.id},'estado',this.value);renderCRM()">${estOpts}</select></td>
+      <td class="c-prox" data-l="Próxima acción"><input value="${(s.proxima||'').replace(/"/g,'&quot;')}" onchange="saveOV(${l.id},'proxima',this.value)"></td>
+      <td class="c-notas" data-l="Notas"><input value="${(s.notas||'').replace(/"/g,'&quot;')}" placeholder="Nota…" onchange="saveOV(${l.id},'notas',this.value)"></td>
+    </tr>`;}).join('')||'<tr class="empty"><td colspan="10">Sin resultados con estos filtros.</td></tr>';
 }
 function exportCRM(){
   const head=["Prioridad","Empresa","Telefono","Ciudad","Provincia","Direccion","Rating","Resenas","Tipo","Origen","Estado","Proxima accion","Notas"];
@@ -1339,8 +1458,9 @@ let PW=localStorage.getItem('funerarias_pw')||'';
 let SYNC_OK=false, pushTimer=null;
 function setSync(mode){
   const b=$('#syncbadge');if(!b)return;
-  const map={ok:['ok','✓ Sincronizado'],saving:['saving','… Guardando'],local:['','● Solo este dispositivo'],err:['err','⚠ Sin conexión'],locked:['err','🔒 Bloqueado']};
-  const m=map[mode]||map.local;b.className='syncbadge '+m[0];b.textContent=m[1];
+  const map={ok:['ok','✓ Sincronizado','✓'],saving:['saving','… Guardando','…'],local:['','● Solo este dispositivo','●'],err:['err','⚠ Sin conexión','⚠'],locked:['err','🔒 Bloqueado','🔒']};
+  const m=map[mode]||map.local;const small=window.matchMedia('(max-width:900px)').matches;
+  b.className='syncbadge '+m[0];b.textContent=small?m[2]:m[1];b.title=m[1];
 }
 async function apiGet(){
   const r=await fetch('/api/state',{headers:PW?{'x-app-password':PW}:{}});
@@ -1390,8 +1510,9 @@ async function pushNow(){
   const side = document.querySelector('.side');
   const hamb = document.querySelector('.hambtn');
   const back = document.querySelector('.backbtn');
-  const navBtns = document.querySelectorAll('.nav button');
-  const roiBtn = document.querySelector('.nav button[data-v="roi"]');
+  const navBtns = document.querySelectorAll('.nav button[data-v]');
+  const roiBtns = document.querySelectorAll('.nav button[data-v="roi"]');
+  const moreBtn = document.querySelector('.bmore');
   const dashboardBtn = document.querySelector('.nav button[data-v="dashboard"]');
   const backdrop = document.createElement('div');
   backdrop.className = 'backdrop';
@@ -1401,14 +1522,15 @@ async function pushNow(){
   hamb && hamb.addEventListener('click', ()=> side.classList.contains('open') ? close() : open());
   backdrop.addEventListener('click', close);
   // ROI fullscreen behaviour: when ROI is selected, show only calculator
-  roiBtn && roiBtn.addEventListener('click', ()=>{
+  roiBtns.forEach(rb=>rb.addEventListener('click', ()=>{
     // allow existing view-switch handlers to run first
     setTimeout(()=>{
       document.body.classList.add('roi-only');
       // ensure ROI view visible
       const v = document.getElementById('v-roi'); if(v) v.classList.add('active');
     },120);
-  });
+  }));
+  moreBtn && moreBtn.addEventListener('click', ()=> side.classList.contains('open') ? close() : open());
   // clicking any other nav removes roi-only
   navBtns.forEach(b=>{
     b.addEventListener('click', ()=>{ if(b.dataset.v !== 'roi') document.body.classList.remove('roi-only'); if(window.innerWidth<=900) close(); });
